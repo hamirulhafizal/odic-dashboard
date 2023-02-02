@@ -1,0 +1,22 @@
+{
+  "menu": [
+
+    {
+        "url": "/users",
+        "name": "Users List",
+        "badge": "",
+        "badgeClass": "",
+        "icon": "",
+        "slug": "users.index"
+      },
+      {
+        "url": "/roles",
+        "name": "Role List",
+        "badge": "",
+        "badgeClass": "",
+        "icon": "",
+        "slug": "roles.index"
+      }
+
+  ]
+}

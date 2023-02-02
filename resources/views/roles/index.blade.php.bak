@@ -1,0 +1,215 @@
+@extends('layouts.app')
+
+
+@section('content')
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 margin-tb">
+            <div class="pull-left">
+                <h2>Role Management</h2>
+            </div>
+            <div class="pull-right">
+            @can('role-create')
+                <button type="button" id="addNewRole" class="btn btn-success"> Create New Role</a>
+            @endcan
+            </div>
+        </div>
+    </div>
+
+
+    @if ($message = Session::get('success'))
+        <div class="alert alert-success messages">
+            <p>{{ $message }}</p>
+        </div>
+    @endif
+
+    <table class="table table-bordered">
+    <tr>
+        <th>No.</th>
+        <th>Name</th>
+        <th width="280px">Action</th>
+    </tr>
+        @foreach ($roles as $key => $role)
+        <tr>
+            <td>{{ ++$i }}</td>
+            <td>{{ $role->name }}</td>
+            <td>
+                <a class="btn btn-info show" href="">Show</a>
+                {{-- @can('role-edit') --}}
+                    <a class="btn btn-primary edit" href="">Edit</a>
+                {{-- @endcan --}}
+                {{-- @can('role-delete')
+                    {!! Form::open(['method' => 'DELETE','route' => ['roles.destroy', $role->id],'style'=>'display:inline']) !!}
+                        {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
+                    {!! Form::close() !!}
+                @endcan --}}
+            </td>
+        </tr>
+        @endforeach
+    </table>
+    {!! $roles->render() !!}
+</div>
+
+
+
+<!-- boostrap modal -->
+<div class="modal fade" id="role-modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title" id="roleModalTitle"></h4>
+        </div>
+        <div class="modal-body">
+            <div>
+                <span id="error" class="hide text-danger small"></span>
+            </div>
+            <form action="javascript:void(0)" id="addRoleForm" name="addRoleForm" class="form-horizontal" method="POST">
+                {{-- {!! Form::open(array('route' => 'roles.store','method'=>'POST' 'id' => "addRoleForm")) !!} --}}
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <strong>Name:</strong>
+                            {{-- {!! Form::text('name', null, array('placeholder' => 'Name','class' => 'form-control')) !!} --}}
+                            <input type="text" name="name" id="name" required>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <strong>Permission:</strong>
+                            <br/>
+                            @foreach($permission as $value)
+                                {{-- <label>{{ Form::checkbox('permission[]', $value->id, false, array('class' => 'name')) }}
+                                {{ $value->name }}</label> --}}
+                                <label for="permission"></label>
+                                <input type="checkbox" value="{{ $value->id }}" name="permissions[]" id="permissions[]" required> {{ $value->name }}
+                            <br/>
+                            @endforeach
+                        </div>
+                    </div>
+                    
+                </div>
+                {{-- {!! Form::close() !!} --}}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+                <button type="submit" class="btn btn-primary" id="btn-save">Submit</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- end bootstrap modal -->
+
+<script type="text/javascript">
+
+    var err = document.querySelector('#error');
+
+    $(document).ready(function($){
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $('#addNewRole').click(function () {
+            $('#addRoleForm').trigger("reset");
+            $('#roleModalTitle').html("Add New Role");
+            $('#role-modal').modal('show');
+        });
+
+        // TODO UPDATE & DELETE
+
+        // $('body').on('click', '.edit', function () {
+        //     var id = $(this).data('id');
+                
+        //     // ajax
+        //     $.ajax({
+        //         type:"POST",
+        //         url: "{{ url('edit-book') }}",
+        //         data: { id: id },
+        //         dataType: 'json',
+        //         success: function(res){
+        //             $('#ajaxBookModel').html("Edit Book");
+        //             $('#ajax-book-model').modal('show');
+        //             $('#id').val(res.id);
+        //             $('#title').val(res.title);
+        //             $('#code').val(res.code);
+        //             $('#author').val(res.author);
+        //         }
+        //     });
+        // });
+        // $('body').on('click', '.delete', function () {
+        //     if (confirm("Delete Record?") == true) {
+        //     var id = $(this).data('id');
+                
+        //     // ajax
+        //     $.ajax({
+        //         type:"POST",
+        //         url: "{{ url('delete-book') }}",
+        //         data: { id: id },
+        //         dataType: 'json',
+        //         success: function(res){
+        //             window.location.reload();
+        //         }
+        //     });
+        //     }
+        // });
+        $('body').on('click', '#btn-save', function (event) {
+            var name = $("#name").val();
+            var permission_arr = [];
+
+            $.each($('input[name="permissions[]"]:checked'), function() {
+                var value = $(this).val();
+
+                permission_arr.push(value);
+            });
+            $("#btn-save").html('Please Wait...');
+            $("#btn-save"). attr("disabled", true);
+            
+            
+            // TODO - Ajax validation
+            if ($('#name').val() == '' ) {
+                console.log('here');
+            }
+            
+            if (name || permission_arr == '') {
+                // ajax
+                $.ajax({
+                    type:"POST",
+                    url: "{{ route('roles.index') }}",
+                    data: {
+                        name:name,
+                        permissions:permission_arr,
+                    },
+                    dataType: 'json',
+                    success: function(res){
+                        console.log(res);
+                        $('#role-modal').modal('hide');
+                        setTimeout(function(){
+                            window.location.reload();
+                        }, 500);
+                        $("#btn-save").html('Submit');
+                        $("#btn-save"). attr("disabled", false);
+                    },
+                    error: function(errors) {
+                        console.log(errors);
+
+                        // err.innerHTML = ''
+                    }
+                });
+            }
+            
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function() {
+          $('.messages').fadeOut('slow');
+        }, 1500);
+    })
+</script>
+
+@endsection
