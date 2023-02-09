@@ -253,7 +253,7 @@ return [
     'base_URI'  => env('WEBSTATS_URL', 'https://www.mywebstats.com.au/api/stats/4'),
     'site_id'   => env('SITE_ID', '101324156'),
     'sitekey'   => env('SITEKEY', 'f3625e1fcd4c3c9b'),
-    'href'      => env('HREF', 'https://singaporefoodfestival.sg/'), // Change this as default domain to filter only
+    'href'      => env('HREF', 'https://app.onedreamproperty.net/'), // Change this as default domain to filter only
 
     /*
     |--------------------------------------------------------------------------
@@ -265,43 +265,7 @@ return [
     */
     'base_url'  =>  env('STRIPE_BASEURL', 'https://api.stripe.com'),
 
-    // Live credentials
-    'stripe_key'  => env('STRIPE_PK', 'pk_live_51H9k2BIeIH5Sr7p4zir02AsWsdqlqnSDx3wkwVkZCVkuo7NBZZJ0AO9t3kIWSzT5wCWmRWnDKlUOi7KzVa0b1pWO00IhMrl9xa'),
-    'stripe_secret'  => env('STRIPE_SECRET', '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'),
 
-    // Test Credentials
-    // 'stripe_key'  => env('STRIPE_PK', 'pk_test_51H9k2BIeIH5Sr7p4KwGbeaM7aHg8Gq1kcB9ykZHLB3VMQynsMuGPwzJWlwtDnZQ4MyO4PXRua4Mz6WqaH4mtw21300WyR1ZWIu'),
-    // 'stripe_secret'  => env('STRIPE_SECRET', 'sk_test_51H9k2BIeIH5Sr7p4I0NXQil84jzCIy2DzTZ3OaH5ucYiSHzSsDfgR4X0DuLYI3AxcrpGMdLbxlgoaTGWNXk3UZfV00Gf7qSaRX'),
-    'success_url' => env('STRIPE_SUCCESS', 'https://singaporefoodfestival.sg/stripe-success'),
-    'cancel_url' => env('STRIPE_CANCEL', 'https://singaporefoodfestival.sg/stripe-cancel'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | eNETS Payment Key
-    |--------------------------------------------------------------------------
-    |
-    | This config will be used for eNETS API communication
-    |
-    */
-    'enets_base_url'  =>  env('ENETS_BASEURL', 'https://uat-api.nets.com.sg:9065'),
-    // 'enets_apikey'  => env('ENETS_APIKEY', 'b027dacd-1c13-4916-8b93-38fae6be2f80'),
-    // 'enets_secret'  => env('ENETS_SECRET', '21296dd3-5bf6-4dfc-b8a2-03fbcc213b7b'),
-
-    // Test
-    // 'enets_apikey'  => env('ENETS_APIKEY', '154eb31c-0f72-45bb-9249-84a1036fd1ca'),
-    // 'enets_secret'  => env('ENETS_SECRET', '38a4b473-0295-439d-92e1-ad26a8c60279'),
-
-    // Production
-    'enets_secret'  => env('ENETS_SECRET', '50d79a4f-1130-490e-906c-c6e44fb59214'),
-    'enets_apikey'  => env('ENETS_APIKEY', '59cd7347-d957-4e31-97d9-9b07be464521'),
-
-    'enets_umid'  => env('ENETS_UMID', 'UMID_827763000'),
-    'enets_mid'  => env('ENETS_MID', '827763000'),
-
-    'handler_url' => env('ENETS_URL', "https://singaporefoodfestival.sg/enets-v2"),
-    'enets_successV4' => env('ENETS_SUCCESSV4_URL', 'https://singaporefoodfestival.sg/enets-v4-success'),
-    'enets_failureV4' => env('ENETS_FAILUREV4_URL', 'https://singaporefoodfestival.sg/enets-v4-failure'),
-    'checkout_expired' => env('ENETS_EXPIRED_URL', 'https://singaporefoodfestival.sg/enets-expired'),
 
     /*
     |--------------------------------------------------------------------------
@@ -311,20 +275,6 @@ return [
     | This config will be used for NETS QR API communication -> Credentials are common testing: Please add in .env to override!
     |
     */
-    'enetsQR_mode' => env('ENETSQR_MODE', 'TEST'),
-    'enetsQR_url' => env('ENETSQR_URL', 'https://singaporefoodfestival.sg/enets-v3'),
-    'enetsQR_success' => env('ENETSQR_SUCCESS_URL', 'https://singaporefoodfestival.sg/enets-v3-success'),
-    'enetsQR_failure' => env('ENETSQR_FAILURE_URL', 'https://singaporefoodfestival.sg/enets-v3-failure'),
-    'enetsQR_tid'  => env('ENETSQR_TID', '37066801'),
-    'enetsQR_mid'  => env('ENETSQR_MID', '11137066800'),
-    'enetsQR_stan'  => env('ENETSQR_MID', '100001'),
-    'enetsQR_api_key' => env('ENETSQR_APIKEY', 'b027dacd-1c13-4916-8b93-38fae6be2f80'),
-    'enetsQR_secret_key' => env('ENETSQR_APIKEY', '21296dd3-5bf6-4dfc-b8a2-03fbcc213b7b'),
-
-    // NETSQR API URL UAT & PRODUCTION
-    'enetsQR_order_url' => env('ENETSQR_ORDER_URL', 'https://uat-api.nets.com.sg:9065/uat/merchantservices/qr/dynamic/v1/order/request'),
-    'enetsQR_query_url' => env('ENETSQR_QUERY_URL', 'https://uat-api.nets.com.sg:9065/uat/merchantservices/qr/dynamic/v1/order/request'),
-    'enetsQR_reversal_url' => env('ENETSQR_REVERSAL_URL', 'https://uat-api.nets.com.sg:9065/uat/merchantservices/qr/dynamic/v1/order/request'),
 
     /*
     |--------------------------------------------------------------------------
