@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
 
@@ -71,20 +72,19 @@ class UserProfileController extends Controller
     public function update(Request $request, $user )
     {
         try {
-            $profile = UserProfile::where('user_name', $user)->first();
+            $profile = User::where('username', $user)->first();
 
+            
             if($profile != null){
-                $profile->photo = $request->photo ? $request->photo : $profile->photo;
-                $profile->nickname = $request->nickname ? $request->nickname : $profile->nickname;
-                $profile->firstName = $request->firstName ? $request->firstName : $profile->firstname;
-                $profile->lastName = $request->lastName ? $request->lastName : $profile->lastName;
-                $profile->identity_no = $request->identity_no ? $request->identity_no : $request->identity_no;
-                $profile->description = $request->description ? $request->description : $request->description;
-                $profile->facebook = $request->facebook ? $request->facebook : $request->facebook;
-                $profile->instagram = $request->instagram ? $request->instagram : $request->instagram;
-                $profile->linkedin = $request->linkedin ? $request->linkedin : $request->linkedin;
-                $profile->tiktok = $request->tiktok ? $request->tiktok : $request->tiktok;
-                $profile->save();
+                $file = $request->file('profile_photo');
+                $profile_file = date('YmdHi') . $file->getClientOriginalName();
+                $file->move(public_path('storage/profile'), $profile_file);
+                $profile->photo = $profile_file ? $profile_file : $profile->photo;
+
+                $file = $request->file('identity_card');
+                $identity_file = date('YmdHi') . $file->getClientOriginalName();
+                $file->move(public_path('storage/identity-card'), $identity_file);
+                $profile->identity_card = $identity_file ? $identity_file : $profile->identity_card;
             }
             return response()->json([$profile], 201);
         } catch (\Throwable $th) {

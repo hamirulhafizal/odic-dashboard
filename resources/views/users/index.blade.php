@@ -158,8 +158,26 @@
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                            <strong><label for="edit_role" class="form-label">Role:</label></strong>
-                            <input class="form-control-plaintext" type="text"  name="edit_role"  id="show_role" disabled>
+                            <strong><label for="email" class="form-label">Phone No:</label></strong>
+                            <input class="form-control-plaintext" type="phone_no"  name="phone_no"  id="show_phone" disabled>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <strong><label for="edit_role" class="form-label"> Identity Card:</label></strong>
+                            <input class="form-control-plaintext" type="text"  name="identity_card"  id="show_identity_card" disabled>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <strong><label for="edit_role" class="form-label"> Referrel URL:</label></strong>
+                            <input class="form-control-plaintext" type="text"  name="referrel_url"  id="show_referrel_url" disabled>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <strong><label for="edit_role" class="form-label"> Verified Status:</label></strong>
+                            <input class="form-control-plaintext" type="text"  name="verified_status"  id="show_verified_status" disabled>
                         </div>
                     </div>
                 </div>
@@ -167,6 +185,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="btn-approve" class="btn btn-primary" data-bs-dismiss="modal">Approve</button>
         </div>
       </div>
     </div>
@@ -229,19 +248,24 @@
 
 
         <div class="card-datatable table-responsive p-2">
-            <div class="pull-right">
+            {{-- <div class="pull-right">
                 @can('user-create')
                 <button type="button" class="btn btn-outline-primary mb-2" data-bs-toggle="modal" data-bs-target="#addUserModel">
                     Create New User
                 </button>
                 @endcan
-            </div>
+            </div> --}}
           <table id="user_table" class="invoice-list-table table">
             <thead>
                 <tr>
                     <th>No</th>
                     <th>Name</th>
+                    <th>Username</th>
                     <th>Email</th>
+                    {{-- <th>Phone No</th> --}}
+                    {{-- <th>Identity Card</th> --}}
+                    <th>Approved Status</th>
+                    {{-- <th>Referrel URL</th> --}}
                     <th>Registered Date</th>
                     <th width="">Action</th>
                 </tr>
@@ -274,10 +298,37 @@
                    columns: [
                        {data: 'id', name: 'id'},
                        {data: 'name', name: 'name'},
+                       {data: 'username', name: 'username'},
                        {data: 'email', name: 'email'},
+                    //    {data: 'phone_no', name: 'phone_no'},
+                    //    {data: 'identity_card', name: 'identity_card'},
+                       {data: 'verified_status', name: 'verified_status'},
+                    //    {data: 'referrel_url', name: 'referrel_url'},
                        {data: 'created_at', name: 'created_at'},
                        {data: 'action', name: 'action', orderable: false, searchable: false},
-                   ]
+                   ],columnDefs: [
+                    {
+                    // Label
+                        targets:[4],
+                        render: function (data, type, full, meta) {
+                            var status_number = full['verified_status'];
+                            var status = {
+                                Approved: { title: 'Approved', class: 'badge-light-success' },
+                                Pending: { title: 'Pending', class: 'badge-light-info' },
+                                Failed: { title: 'Failed', class: 'badge-light-warning' },
+                            };
+                            if (typeof status[status_number] === 'undefined') {
+                            return data;
+                            }
+                            return (
+                            '<span class="badge rounded-pill ' +
+                            status[status_number].class +
+                            '">' +
+                            status[status_number].title +
+                            '</span>'
+                            );
+                        },
+                    }, ]
                });
            }
 
@@ -360,6 +411,7 @@
             });
 
 
+
            $('body').on('click', '#btn-save', function (event) {
             var name = $("#name").val();
             var email = $("#email").val();
@@ -425,19 +477,55 @@
 
         });
 
-        $('body').on('click', '.show', function () {
-            console.log($(this).data());
+        $('body').on('click', '#show', function () {
             var name = $(this).data('name')
             var id = $(this).data('id')
-            var role = $(this).data('role')
             var email = $(this).data('email')
+            var phone_no = $(this).data('phone_no')
+            var verified_status = $(this).data('verified_status')
+            var referrel_url = $(this).data('referrel_url')
+            var username = $(this).data('username')
+            var identity_card = $(this).data('identity_card')
 
-            $("#btn-show"). attr("data-id", id);
+            $("#btn-approve"). attr("data-id", id);
             $('#show_name').val(name);
+            $('#show_username').val(username);
             $('#show_email').val(email);
-            $('#show_role').val(role);
+            $('#show_phone').val(phone_no);
+            $('#show_ identity_card').val(identity_card);
+            $('#show_referrel_url').val(referrel_url);
+            $('#show_verified_status').val(verified_status);
         });
 
+        $('body').on('click', '#btn-approve', function (event) {
+            var id = $(this).data('id')
+            var url = "{{ route('users.approved', ['user' => ":id"]) }}";
+            url = url.replace(':id', id);
+            // console.log(id);
+            $.ajax({
+                type:"PUT",
+                url: url,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                },
+                dataType: 'json',
+                success: function(data){
+                    setTimeout(() => {
+                        toastr.success(data.message, data.title);
+                        window.location.reload();
+                    },1500)
+                    $("#btn-save").html('Submit');
+                    $("#btn-save"). attr("disabled", false);
+                },
+                error: function(errors) {
+                    setTimeout(() => {
+                        toastr.error(errors.responseJSON.message, errors.responseJSON.title);
+                    },500)
+
+                    // err.innerHTML = ''
+                }
+            });
+        });
 
         $('body').on('click', '.delete', function () {
             var name = $(this).data('name')

@@ -22,7 +22,7 @@ $configData = app\Helpers\helper::applClasses();
     </ul>
   </div>
   <div class="shadow-bottom"></div>
-  <div class="main-menu-content" style="margin-top: 100px;">
+  <div class="main-menu-content" style="margin-top: 20px;">
     <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
       {{-- Foreach menu item starts --}}
         {{-- {{dd($menuData)}} --}}

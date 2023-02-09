@@ -9,7 +9,7 @@ class UserProfile extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'user_name', 'photo', 'nickname', 'firstName', 'lastName', 'identity_no',
+    protected $fillable = ['user_id', 'user_name', 'photo', 'nickname', 'firstName', 'lastName', 'identity_card',
     'description', 'facebook', 'instagram', 'youtube', 'linkedin', 'tiktok', 'verified_status', 'view_count'];
 
 }

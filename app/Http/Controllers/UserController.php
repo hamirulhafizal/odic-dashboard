@@ -61,13 +61,13 @@ class UserController extends Controller
                     ->addColumn('action', function($data){
                         $user = auth()->user();
 
-                        $btn = '<a href="javascript:void(0)" class="show btn btn-primary btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-email="'.$data->email.'" data-role="'.preg_replace('/[^A-Za-z0-9\-]/', '', $data->getRoleNames()).'" data-bs-toggle="modal" data-bs-target="#showUserModal">View</a>';
-                        if ($user->can('user-edit')) {
-                            $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-warning btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-email="'.$data->email.'" data-role="'.preg_replace('/[^A-Za-z0-9\-]/', '', $data->getRoleNames()).'" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</a>';
-                        }
-                        if ($user->can('user-delete')) {
-                            $btn = $btn.'<a href="javascript:void(0)" class="delete btn btn-danger btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</a>';
-                        }
+                        $btn = '<a href="javascript:void(0)" id="show" class="show btn btn-primary btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-email="'.$data->email.'" data-identity_card="'.$data->identity_card.'" data-referrel_url="'.$data->referrel_url.'" data-verified_status="'.$data->verified_status.'" data-phone_no="'.$data->phone_no.'" data-role="'.preg_replace('/[^A-Za-z0-9\-]/', '', $data->getRoleNames()).'" data-bs-toggle="modal" data-bs-target="#showUserModal">View & Approve</a>';
+                        // if ($user->can('user-edit')) {
+                        //     $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-warning btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-email="'.$data->email.'" data-role="'.preg_replace('/[^A-Za-z0-9\-]/', '', $data->getRoleNames()).'" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</a>';
+                        // }
+                        // if ($user->can('user-delete')) {
+                        //     $btn = $btn.'<a href="javascript:void(0)" class="delete btn btn-danger btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</a>';
+                        // }
 
                         // $$btn = $btn.'<a href="javascript:void(0)" class="btn btn-primary edit" id="btn-edit" data-id="{{$data->id}}" data-name="{{$data->name}}" value="{{$data->id}}" >Edit</a>';
                         return $btn;
@@ -198,6 +198,19 @@ class UserController extends Controller
         }
     }
 
+    public function approved($id){
+        try{
+            $user = User::find($id);
+            $user->verified_status = 'Approved';
+            $user->save();
+            $message = array('message' => 'User account approved!', 'title' => 'Success!');
+            return response()->json($message);
+        }catch (\Throwable $th) {
+            // DB::rollBack();
+            $message = array('message' => 'Failed to approved!', 'title' => 'Failed!');
+            return response()->json($message);
+        }
+    }
     public function export(Request $request)
     {
         return Excel::download(new UserExport($request->all()), 'visitors-list.xlsx');

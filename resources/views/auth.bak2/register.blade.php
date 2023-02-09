@@ -1,18 +1,10 @@
-
-@extends('layouts/fullLayoutMaster')
-
-@section('title', '')
-
-@section('page-style')
-  {{-- Page Css files --}}
-  <link rel="stylesheet" href="{{ asset(mix('css/base/plugins/forms/form-validation.css')) }}">
-  <link rel="stylesheet" href="{{ asset(mix('css/base/pages/authentication.css')) }}">
-@endsection
+@extends('layouts.app')
 
 @section('content')
-    <div class="row justify-content-center ">
+<div class="container">
+    <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card mt-5">
+            <div class="card">
                 <div class="card-header">{{ __('Register') }}</div>
 
                 <div class="card-body">
@@ -81,5 +73,5 @@
             </div>
         </div>
     </div>
-
+</div>
 @endsection

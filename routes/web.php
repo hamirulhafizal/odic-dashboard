@@ -22,6 +22,7 @@ Auth::routes();
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
+    Route::put('users/approved/{user}', [UserController::class, 'approved'])->name('users.approved');
 });
 
 Route::prefix('export')->name('export.')->group(function () {

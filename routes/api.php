@@ -61,25 +61,29 @@ Route::prefix('auth')->name('auth.')->group(function () {
             $input = [
                 'email' => $request->email,
                 'name' => $request->name,
+                'phone_no' => $request->phone_no,
                 'password' => Hash::make($request->password),
             ];
 
             $user = User::create($input);
-            $profile = new UserProfile();
-            // dd( $profile);
-            $profile->user_id = $user->id;
+
             if($user->id < 10){
-                $profile->user_name = 'odic00000'.$user->id;
+                $user->username = 'odic00000'.$user->id;
+                $user->referrel_url = 'https://onedreamproperty/odic00000'.$user->id;
             }elseif($user->id < 100){
-                $profile->user_name = 'odic0000'.$user->id;
+                $user->username = 'odic0000'.$user->id;
+                $user->referrel_url = 'https://onedreamproperty/odic0000'.$user->id;
             }elseif($user->id < 1000){
-                $profile->user_name = 'odic000'.$user->id;
+                $user->username = 'odic000'.$user->id;
+                $user->referrel_url = 'https://onedreamproperty/odic000'.$user->id;
             }else{
-                $profile->user_name = 'odic00'.$user->id;
+                $user->username = 'odic00'.$user->id;
+                $user->referrel_url = 'https://onedreamproperty/odic00'.$user->id;
             }
 
-            $profile->verified_status = 'pending';
-            $profile->save();
+            $user->verified_status = 'pending';
+
+            $user->save();
             $user->assignRole($request->input('roles'));
 
         } catch (\Throwable $th) {

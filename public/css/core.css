@@ -5378,57 +5378,6 @@ textarea.form-control-lg {
   filter: invert(1) grayscale(100%) brightness(200%);
 }
 
-.toast {
-  width: 380px;
-  max-width: 100%;
-  font-size: 0.857rem;
-  color: #6e6b7b;
-  pointer-events: auto;
-  background-color: rgba(255, 255, 255, 0.85);
-  background-clip: padding-box;
-  border: 0 solid rgba(34, 41, 47, 0.1);
-  box-shadow: 0 2px 20px 0 rgba(34, 41, 47, 0.08);
-  border-radius: 0.286rem;
-}
-.toast.showing {
-  opacity: 0;
-}
-.toast:not(.show) {
-  display: none;
-}
-
-.toast-container {
-  width: -webkit-max-content;
-  width: -moz-max-content;
-  width: max-content;
-  max-width: 100%;
-  pointer-events: none;
-}
-.toast-container > :not(:last-child) {
-  margin-bottom: 1rem;
-}
-
-.toast-header {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1.14rem;
-  color: #6e6b7b;
-  background-color: #fff;
-  background-clip: padding-box;
-  border-bottom: 0 solid rgba(34, 41, 47, 0.05);
-  border-top-left-radius: 0.286rem;
-  border-top-right-radius: 0.286rem;
-}
-.toast-header .btn-close {
-  margin-right: -0.57rem;
-  margin-left: 1.14rem;
-}
-
-.toast-body {
-  padding: 1.14rem;
-  word-wrap: break-word;
-}
-
 .modal {
   position: fixed;
   top: 0;
@@ -15968,7 +15917,7 @@ input:focus ~ .bg-info {
 
 .badge.badge-light-warning {
   background-color: rgba(255, 159, 67, 0.12);
-  color: #B5A837 !important;
+  color: red !important;
 }
 
 .overlay-warning {

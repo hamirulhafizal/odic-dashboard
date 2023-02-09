@@ -21,15 +21,15 @@ class CreateUserProfilesTable extends Migration
             $table->string('nickname')->nullable();
             $table->string('firstName')->nullable();
             $table->string('lastName')->nullable();
-            $table->bigInteger('identity_no')->unique()->nullable();
+            $table->string('identity_card')->unique()->nullable();
             $table->string('description')->nullable();
             $table->string('facebook')->nullable();
             $table->string('instagram')->nullable();
             $table->string('youtube')->nullable();
             $table->string('linkedin')->nullable();
             $table->string('tiktok')->nullable();
-            $table->string('verified_status');
-            $table->string('view_count')->nullable();
+            $table->string('verified_status')->nullable();
+            $table->string('referrel_url')->nullable();
             $table->timestamps();
         });
     }
