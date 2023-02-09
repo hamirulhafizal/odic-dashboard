@@ -2,9 +2,9 @@
 RewriteEngine on
 RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-SSL} !on
-RewriteCond %{HTTP_HOST} ^app\.onedreamproperty3\.net [OR]
-RewriteCond %{HTTP_HOST} ^www\.app\.onedreamproperty3\.net
-RewriteRule ^/?$ "https\:\/\/app\.onedreamproperty3\.net\/" [R=301,L]
+RewriteCond %{HTTP_HOST} ^app\.onedreamproperty\.net [OR]
+RewriteCond %{HTTP_HOST} ^www\.app\.onedreamproperty\.net
+RewriteRule ^/?$ "https\:\/\/app\.onedreamproperty\.net\/" [R=301,L]
 RewriteRule ^(.*)$ public/$1 [L]
 
 # php -- BEGIN cPanel-generated handler, do not edit
