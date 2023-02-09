@@ -81,7 +81,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
                 $user->referrel_url = 'https://onedreamproperty/odic00'.$user->id;
             }
 
-            $user->verified_status = 'pending';
+            $user->verified_status = 'Pending';
 
             $user->save();
             $user->assignRole($request->input('roles'));
