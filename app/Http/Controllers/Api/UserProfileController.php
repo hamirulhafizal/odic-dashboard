@@ -74,17 +74,30 @@ class UserProfileController extends Controller
         try {
             $profile = User::where('username', $user)->first();
 
-            
             if($profile != null){
-                $file = $request->file('profile_photo');
-                $profile_file = date('YmdHi') . $file->getClientOriginalName();
-                $file->move(public_path('storage/profile'), $profile_file);
-                $profile->photo = $profile_file ? $profile_file : $profile->photo;
+                if($request->file('profile_image')){
+                    $file = $request->file('profile_image');
+                    if($profile->profile_image != $file->getClientOriginalName()){
+                        $filename = date('YmdHi').$file->getClientOriginalName();
+                        $file-> move(public_path('profile'), $filename);
+                        $profile->profile_image = $filename ? $filename : null;
+                    }
+                }
 
-                $file = $request->file('identity_card');
-                $identity_file = date('YmdHi') . $file->getClientOriginalName();
-                $file->move(public_path('storage/identity-card'), $identity_file);
-                $profile->identity_card = $identity_file ? $identity_file : $profile->identity_card;
+                if($request->file('identity_card')){
+                    $file = $request->file('identity_card');
+                    if($profile->identity_card != $file->getClientOriginalName()){
+                        $filename = date('YmdHi').$file->getClientOriginalName();
+                        $file-> move(public_path('profile'), $filename);
+                        $profile->identity_card = $filename ? $filename : null;
+                    }
+                }
+
+                $profile->bank_account =  $request->bank_account ? $request->bank_account : $profile->bank_account;
+                $profile->bank_name =  $request->bank_name ? $request->bank_name : $profile->bank_name;
+                $profile->fullname =  $request->fullname ? $request->fullname : $profile->fullname;
+                $profile->identity_card_no =  $request->identity_card_no ? $request->identity_card_no : $profile->identity_card_no;
+                $profile->save();
             }
             return response()->json([$profile], 201);
         } catch (\Throwable $th) {

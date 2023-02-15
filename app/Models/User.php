@@ -22,8 +22,16 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_newsletter',
-        'is_virtualmarketplace',
+        'phone_no',
+        'profile_image',
+        'bank_account',
+        'bank_name',
+        'username',
+        'identity_card',
+        'fullname',
+        'identity_card_no',
+        'verified_status',
+        'referrel_url',
     ];
 
     /**

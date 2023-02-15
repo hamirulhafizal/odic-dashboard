@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\InvestmentController;
 use App\Http\Controllers\Api\UserProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,8 +31,6 @@ use Illuminate\Support\Str;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-Route::put('user-profile/edit/{user}', [UserProfileController::class,'update']);
 
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('login', function (Request $request) {
@@ -151,5 +150,10 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::middleware('auth:sanctum')->get('user', function (Request $request) {
         return $request->user();
     });
+
+
 });
 
+Route::post('user-profile/edit/{user}', [UserProfileController::class,'update'])->middleware('auth:sanctum')->name('profile.store');
+Route::post('investments', [InvestmentController::class, 'store'])->middleware('auth:sanctum')->name('investment.store');
+Route::get('investments/{username}', [InvestmentController::class, 'investmentIndex'])->middleware('auth:sanctum')->name('investment.investmentIndex');

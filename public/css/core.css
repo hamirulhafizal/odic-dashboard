@@ -16179,8 +16179,8 @@ input:focus ~ .bg-warning {
 }
 
 .btn-danger {
-  border-color: #B5A837 !important;
-  background-color: #B5A837 !important;
+  border-color: #e73d3e !important;
+  background-color: #e73d3e !important;
   color: #fff !important;
 }
 .btn-danger:focus, .btn-danger:active, .btn-danger.active {
@@ -16188,7 +16188,7 @@ input:focus ~ .bg-warning {
   background-color: #e73d3e !important;
 }
 .btn-danger:hover:not(.disabled):not(:disabled) {
-  box-shadow: 0 8px 25px -8px #B5A837;
+  box-shadow: 0 8px 25px -8px red;
 }
 .btn-danger:not(:disabled):not(.disabled):active:focus {
   box-shadow: none;

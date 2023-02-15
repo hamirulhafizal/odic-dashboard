@@ -3,19 +3,19 @@
 
     {
         "url": "/users",
-        "name": "Users List",
+        "name": "Users",
         "badge": "",
         "badgeClass": "",
         "icon": "",
         "slug": "users.index"
       },
       {
-        "url": "/roles",
-        "name": "Role List",
+        "url": "/investments",
+        "name": "Investment",
         "badge": "",
         "badgeClass": "",
         "icon": "",
-        "slug": "roles.index"
+        "slug": "investment.index"
       }
 
   ]
