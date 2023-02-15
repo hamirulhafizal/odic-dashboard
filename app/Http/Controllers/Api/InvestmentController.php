@@ -81,6 +81,17 @@ class InvestmentController extends Controller
             return response()->json('Failed to get Investment data!', 401);
         }
     }
+
+    public function getUserByUsername($username)
+    {
+        try {
+            $data = User::where('username', $username)->get();
+            return response()->json($data, 201);
+        } catch (\Throwable $th) {
+            throw $th;
+            return response()->json('Failed to get User data!', 401);
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *
