@@ -500,6 +500,20 @@
 
         });
 
+        function addCommas(nStr)
+        {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+
+            return x1 + x2;
+        }
+
         $('body').on('click', '.edit', function () {
             var name = $(this).data('name')
             var id = $(this).data('id')
@@ -517,13 +531,15 @@
         $('body').on('click', '#show', function () {
             var username = $(this).data('username')
             var id = $(this).data('id')
-            var amount = $(this).data('amount')
+            var b_amount = $(this).data('amount')
             var roi = $(this).data('roi')
             var slot = $(this).data('slot')
-            var roi_amount = $(this).data('roi_amount')
+            var b_roi_amount = $(this).data('roi_amount')
             var receipt = $(this).data('receipt')
             var status = $(this).data('status')
-
+            var amount =  addCommas(b_amount)
+            var roi_amount =  addCommas(b_roi_amount)
+            
             $("#btn-approve"). attr("data-id", id);
             $("#btn-reject"). attr("data-id", id);
             $('#show_username').val(username);
