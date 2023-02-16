@@ -73,6 +73,7 @@ class UserController extends Controller
                         return $btn;
                 })
                 ->editColumn('created_at', function($data){ $formatedDate = Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)->format('Y-m-d H:i:s'); return $formatedDate; })
+                ->editColumn('phone_no', function($data){ $formatedDate = 'https://api.whatsapp.com/send/?phone='.$data->created_at;  return $formatedDate; })
                 ->rawColumns(['action'])
                 ->order(function ($data) {
                     $data->orderBy('created_at', 'desc');

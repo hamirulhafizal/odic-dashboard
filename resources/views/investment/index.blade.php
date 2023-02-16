@@ -9,7 +9,22 @@
   <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/rowGroup.bootstrap5.min.css')) }}">
   <link rel="stylesheet" href="{{ asset(mix('vendors/css/pickers/flatpickr/flatpickr.min.css')) }}">
 @endsection
+<style>
+    input[type=checkbox] {
+      display: none;
+    }
 
+    .container img {
+      margin: 100px;
+      transition: transform 0.25s ease;
+      cursor: zoom-in;
+    }
+
+    input[type=checkbox]:checked ~ label > img {
+      transform: scale(2);
+      cursor: zoom-out;
+    }
+</style>
 @section('title', 'Investment Management')
 @section('content')
 
@@ -145,43 +160,56 @@
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong> <label for="name" class="form-label">Username:</label></strong>
-                            <input class="form-control-plaintext"  type="text" name="username" id="show_username" disabled>
+                            <input class="form-control-plaintext"  type="text" name="username" id="show_username"
+                            style="padding-top:0px; position: relative; top: -6px" disabled>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><label for="email" class="form-label">Amount:</label></strong>
-                            <input class="form-control-plaintext" type="text"  name="amount"  id="show_amount" disabled>
+                            <input class="form-control-plaintext" type="text"  name="amount"  id="show_amount"
+                            style="padding-top:0px; position: relative; top: -6px" disabled>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><label for="email" class="form-label">Roi:</label></strong>
-                            <input class="form-control-plaintext" type="text"  name="roi"  id="show_roi" disabled>
+                            <input class="form-control-plaintext" type="text"  name="roi"  id="show_roi"
+                            style="padding-top:0px; position: relative; top: -6px" disabled>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><label for="email" class="form-label">Slot:</label></strong>
-                            <input class="form-control-plaintext" type="text"  name="slot"  id="show_slot" disabled>
+                            <input class="form-control-plaintext" type="text"  name="slot"  id="show_slot"
+                            style="padding-top:0px; position: relative; top: -6px" disabled>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><label for="edit_role" class="form-label"> Roi Amount:</label></strong>
-                            <input class="form-control-plaintext" type="text"  name="roi_amount"  id="show_roi_amount" disabled>
+                            <input class="form-control-plaintext" type="text"  name="roi_amount"  id="show_roi_amount"
+                            style="padding-top:0px; position: relative; top: -6px" disabled>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><label for="edit_role" class="form-label"> Receipt:</label></strong>
-                            <img id="view_frame" src="" class="rounded mx-auto d-block " width="350" disabled/>
+                            <div style="text-align: center; z-index: 1; position: relative;">
+                                <input type="checkbox" id="zoomCheck">
+                                <label for="zoomCheck">
+                                    <img id="view_frame" src="" class="rounded mx-auto d-block " width="350"
+                                    style="padding-top:0px; position: relative; top: -6px" disabled/>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                            <strong><label for="edit_role" class="form-label">Status:</label></strong>
-                            <input class="form-control-plaintext" type="text"  name="status"  id="show_status" disabled>
+                            <strong><label for="edit_role" class="form-label">Status:</label></strong><br>
+                            {{-- <input class="form-control-plaintext badge-light-info" type="text"  name="status"  id="show_status"
+                            style="padding-top:0px; position: relative; top: -6px" disabled> --}}
+                            <span class="badge rounded-pill badge-light-info" id="show_status" ></span>
                         </div>
                     </div>
                 </div>
@@ -265,10 +293,10 @@
                 <tr>
                     <th>Investment ID</th>
                     <th>Username</th>
-                    <th>Amount</th>
-                    <th>Roi</th>
+                    <th>Amount(RM)</th>
+                    <th>Roi(%)</th>
                     <th>Slot</th>
-                    <th>Roi Amount</th>
+                    <th>Roi Amount(RM)</th>
                     {{-- <th>Receipt</th> --}}
                     <th>Status</th>
                     {{-- <th>Referrel URL</th> --}}
@@ -320,9 +348,9 @@
                             var status_number = full['status'];
                             var status = {
                                 Pending: { title: 'Pending', class: 'badge-light-info' },
-                                Progress: { title: 'Progress', class: 'badge-light-success' },
+                                Progress: { title: 'Progress', class: 'badge-light-danger' },
                                 Withdraw: { title: 'Withdraw', class: 'badge-light-success' },
-                                Floating: { title: 'Floating', class: 'badge-light-success' },
+                                Floating: { title: 'Floating', class: 'badge-light-danger' },
                                 Completed: { title: 'Completed', class: 'badge-light-success' },
                                 Fail: { title: 'Fail', class: 'badge-light-warning' },
                             };
@@ -499,13 +527,14 @@
             $("#btn-approve"). attr("data-id", id);
             $("#btn-reject"). attr("data-id", id);
             $('#show_username').val(username);
-            $('#show_amount').val(amount);
-            $('#show_roi').val(roi);
+            $('#show_amount').val('RM '+amount);
+            $('#show_roi').val(roi +'%');
             $('#show_slot').val(slot);
-            $('#show_roi_amount').val(roi_amount);
+            $('#show_roi_amount').val('RM ' +roi_amount);
             // $('#show_receipt').val(receipt);
             $('#view_frame').attr("src",  `{{asset('investment/${receipt}')}}`);
-            $('#show_status').val(status);
+            $("#show_status").text(status);
+
         });
 
         $('body').on('click', '#btn-approve', function (event) {

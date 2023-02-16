@@ -57,6 +57,8 @@ class InvestmentController extends Controller
                         return $btn;
                 })
                 ->editColumn('created_at', function($data){ $formatedDate = Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)->format('Y-m-d H:i:s'); return $formatedDate; })
+                ->editColumn('amount', function($data){ $formatedDate = number_format($data->amount); return $formatedDate; })
+                ->editColumn('roi_amount', function($data){ $formatedDate = number_format($data->roi_amount); return $formatedDate; })
                 ->rawColumns(['action'])
                 // ->order(function ($data) {
                 //     $data->orderBy('created_at', 'desc');
@@ -69,7 +71,6 @@ class InvestmentController extends Controller
 
     public function investmentIndex($username)
     {
-        // dd($username);
         try {
             $data = Investments::where('username', $username)
             ->join('investment_status', 'investment_status.investment_id', '=' ,'investments.id')
@@ -110,7 +111,6 @@ class InvestmentController extends Controller
      */
     public function store(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric|min:1000',
             'receipt' => 'required',
@@ -131,7 +131,6 @@ class InvestmentController extends Controller
         }
 
         try {
-
             $investment = new Investments();
             $slot = $request->amount / 1000;
             $investment->username = $request->username;

@@ -9,7 +9,22 @@
   <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/rowGroup.bootstrap5.min.css')) }}">
   <link rel="stylesheet" href="{{ asset(mix('vendors/css/pickers/flatpickr/flatpickr.min.css')) }}">
 @endsection
+<style>
+    input[type=checkbox] {
+      display: none;
+    }
 
+    .container img {
+      margin: 100px;
+      transition: transform 0.25s ease;
+      cursor: zoom-in;
+    }
+
+    input[type=checkbox]:checked ~ label > img {
+      transform: scale(2);
+      cursor: zoom-out;
+    }
+</style>
 @section('title', 'User Management')
 @section('content')
 
@@ -147,37 +162,51 @@
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong> <label for="name" class="form-label">Name:</label></strong>
-                            <input class="form-control-plaintext"  type="text" name="name" id="show_name" disabled>
+                            <input class="form-control-plaintext"  type="text" name="name" id="show_name"
+                            style="padding-top:0px; position: relative; top: -6px" disabled>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><label for="email" class="form-label">Email:</label></strong>
-                            <input class="form-control-plaintext" type="email"  name="email"  id="show_email" disabled>
+                            <input class="form-control-plaintext" type="email"  name="email"  id="show_email"
+                            style="padding-top:0px; position: relative; top: -6px" disabled>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><label for="email" class="form-label">Phone No:</label></strong>
-                            <input class="form-control-plaintext" type="phone_no"  name="phone_no"  id="show_phone" disabled>
+                            <div style=" display: flex">
+                                <input class="form-control-plaintext" type="phone_no"  name="phone_no"  id="show_phone"
+                                style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
+                                <a id="the-link" href="" target="_blank"><img src="{{asset('images/icons/whatsapp.png')}}" height="auto" width ="30" style="position: relative; top: -10px;" alt=""></a>
+
+                            </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><label for="edit_role" class="form-label"> Identity Card:</label></strong>
-                            <input class="form-control-plaintext" type="text"  name="identity_card"  id="show_identity_card" disabled>
+                            <div style="text-align: center; z-index: 1; position: relative;">
+                                <input type="checkbox" id="zoomCheck">
+                                <label for="zoomCheck">
+                                    <img id="view_frame" src="" class="rounded mx-auto d-block " width="350"
+                                    style="padding-top:0px; position: relative; top: -6px" disabled/>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><label for="edit_role" class="form-label"> Referrel URL:</label></strong>
-                            <input class="form-control-plaintext" type="text"  name="referrel_url"  id="show_referrel_url" disabled>
+                            <input class="form-control-plaintext" type="text"  name="referrel_url"  id="show_referrel_url"
+                            style="padding-top:0px; position: relative; top: -6px" disabled>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                            <strong><label for="edit_role" class="form-label"> Verified Status:</label></strong>
-                            <input class="form-control-plaintext" type="text"  name="verified_status"  id="show_verified_status" disabled>
+                            <strong><label for="edit_role" class="form-label"> Verified Status:</label></strong><br>
+                            <span class="badge rounded-pill badge-light-info" id="show_verified_status" ></span>
                         </div>
                     </div>
                 </div>
@@ -275,9 +304,6 @@
       </div>
     </div>
   </div>
-
-
-
 
     <script type="text/javascript">
         $(document).ready(function(){
@@ -410,7 +436,7 @@
 
             });
 
-
+        //    $('#identity_card_zoom').zoom();
 
            $('body').on('click', '#btn-save', function (event) {
             var name = $("#name").val();
@@ -492,9 +518,12 @@
             $('#show_username').val(username);
             $('#show_email').val(email);
             $('#show_phone').val(phone_no);
-            $('#show_ identity_card').val(identity_card);
+            $('#show_identity_card').val(identity_card);
             $('#show_referrel_url').val(referrel_url);
-            $('#show_verified_status').val(verified_status);
+            $("#show_verified_status").text(verified_status);
+            $('#view_frame').attr("src",  `{{asset('profile/${identity_card}')}}`);
+            // document.querySelector('#the-link').setAttribute('href',  `https://api.whatsapp.com/send/?phone=${receipt}`);
+            document.querySelector('#the-link').setAttribute('href', 'https://api.whatsapp.com/send/?phone='+phone_no);
         });
 
         $('body').on('click', '#btn-approve', function (event) {
