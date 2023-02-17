@@ -9,7 +9,7 @@
     {{-- Body --}}
     <div></div>
     {{ $slot }}
-{{dd($slot)}}
+
     {{-- Subcopy --}}
     @isset($subcopy)
         @slot('subcopy')

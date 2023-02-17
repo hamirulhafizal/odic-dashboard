@@ -17,6 +17,11 @@ use App\Models\UserProfile;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+
+use Illuminate\Auth\Events\Verified;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -40,6 +45,11 @@ Route::prefix('auth')->name('auth.')->group(function () {
         ]);
 
         $user = User::firstWhere(['email' => $request->email]);
+        if (! $user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+            return response()->json(["msg" => "Email not yet verification! Email verification link sent on your email address."]);
+        }
+
         $tokenName = $user->email . '-' . $request->header('User-Agent');
         $tokenObject = $user->createToken($tokenName);
 
@@ -65,6 +75,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             ];
 
             $user = User::create($input);
+            $user->sendEmailVerificationNotification();
 
             if($user->id < 10){
                 $user->username = 'odic00000'.$user->id;
@@ -86,7 +97,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             $user->assignRole($request->input('roles'));
 
         } catch (\Throwable $th) {
-            return response()->json(['Register Failed'], 429);
+            return response()->json(['message' => 'Registration Failed.'], 401);
         }
 
         $tokenName = $user->email . '-' . $request->header('User-Agent');
@@ -104,9 +115,9 @@ Route::prefix('auth')->name('auth.')->group(function () {
         return response()->json(['message' => 'Successfully logged out.'], 204);
     })->middleware(['auth:sanctum']);
 
-    Route::get('forgot-password', function () {
-        return view('auth.passwords.email');
-    })->middleware('guest')->name('password.request');
+    // Route::get('forgot-password', function () {
+    //     return view('auth.passwords.email');
+    // })->middleware('guest')->name('password.request');
 
     Route::post('forgot-password', function (Request $request) {
         $request->validate(['email' => 'required|email']);
@@ -121,38 +132,66 @@ Route::prefix('auth')->name('auth.')->group(function () {
     })->middleware('guest')->name('password.email');
 
 
-    Route::post('reset-password', function (Request $request) {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
-        ]);
+    // Route::post('reset-password', function (Request $request) {
+    //     $request->validate([
+    //         'token' => 'required',
+    //         'email' => 'required|email',
+    //         'password' => 'required|min:8|confirmed',
+    //     ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->setRememberToken(Str::random(60));
+    //     $status = Password::reset(
+    //         $request->only('email', 'password', 'password_confirmation', 'token'),
+    //         function ($user, $password) {
+    //             $user->forceFill([
+    //                 'password' => Hash::make($password)
+    //             ])->setRememberToken(Str::random(60));
 
-                $user->save();
+    //             $user->save();
 
-                event(new PasswordReset($user));
-            }
-        );
+    //             event(new PasswordReset($user));
+    //         }
+    //     );
 
-        return $status === Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withErrors(['email' => [__($status)]]);
-    })->middleware('guest')->name('password.update');
+    //     return $status === Password::PASSWORD_RESET
+    //                 ? redirect()->route('login')->with('status', __($status))
+    //                 : back()->withErrors(['email' => [__($status)]]);
+    // })->middleware('guest')->name('password.update');
 
+    // Route::post('forgot-password', function (Request $request) {
+    //     $request->validate([
+    //         'email' => ['required', 'email'],
+    //     ]);
+
+    //     $status = Password::broker('users')->sendResetLink($request->all());
+
+    //     return $status == Password::RESET_LINK_SENT
+    //         ? response()->json(['message' => 'Reset link sent.'], 204)
+    //         : response()->json(['message' => 'Something went wrong.', 500]);
+    // });
 
     Route::middleware('auth:sanctum')->get('user', function (Request $request) {
         return $request->user();
     });
-
-
 });
+
+Route::get('/email/verify/{id}/{hash}', function (Request $request) {
+    $params = $request->route()->parameters();
+    $user = User::find($params['id']);
+    if (! $user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+
+        event(new Verified($user));
+    }
+
+    return redirect('/');
+
+})->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 Route::post('user-profile/edit/{user}', [UserProfileController::class,'update'])->middleware('auth:sanctum')->name('profile.store');
 Route::post('investments', [InvestmentController::class, 'store'])->middleware('auth:sanctum')->name('investment.store');
