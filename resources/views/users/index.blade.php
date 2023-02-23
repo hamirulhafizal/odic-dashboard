@@ -150,7 +150,7 @@
 
 {{-- show user modal --}}
 <div class="modal fade" id="showUserModal" tabindex="-1" aria-labelledby="showUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-l">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="showUserFormLabel">Show User</h5>
@@ -160,10 +160,28 @@
             <form action="javascript:void(0)" id="showUserForm" name="showUserForm" class="form-horizontal" method="POST">
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group mb-2">
+                            <label for="staticEmail2" class="sr-only">Email</label>
+                            <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="email@example.com">
+                          </div>
+                          <div class="form-group mx-sm-3 mb-2">
+                            <label for="inputPassword2" class="sr-only">Password</label>
+                            <input type="password" class="form-control" id="inputPassword2" placeholder="Password">
+                          </div>
                         <div class="form-group">
+
                             <strong> <label for="name" class="form-label">Name:</label></strong>
                             <input class="form-control-plaintext"  type="text" name="name" id="show_name"
                             style="padding-top:0px; position: relative; top: -6px" disabled>
+
+                            <strong><label for="edit_role" class="form-label"> Identity Card:</label></strong>
+                            <div style="text-align: center; z-index: 1; position: relative;">
+                                <input type="checkbox" id="zoomCheck">
+                                <label for="zoomCheck">
+                                    <img id="view_frame" src="" class="rounded mx-auto d-block " width="100"
+                                    style="padding-top:0px; position: relative; top: -6px" disabled/>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
@@ -293,6 +311,7 @@
                     <th>Email</th>
                     {{-- <th>Phone No</th> --}}
                     {{-- <th>Identity Card</th> --}}
+                    <th>Email Verified</th>
                     <th>Approved Status</th>
                     {{-- <th>Referrel URL</th> --}}
                     <th>Registered Date</th>
@@ -328,6 +347,7 @@
                        {data: 'email', name: 'email'},
                     //    {data: 'phone_no', name: 'phone_no'},
                     //    {data: 'identity_card', name: 'identity_card'},
+                       {data: 'email_verified_at', name: 'email_verified_at'},
                        {data: 'verified_status', name: 'verified_status'},
                     //    {data: 'referrel_url', name: 'referrel_url'},
                        {data: 'created_at', name: 'created_at'},
@@ -335,13 +355,34 @@
                    ],columnDefs: [
                     {
                     // Label
-                        targets:[4],
+                        targets:[5],
                         render: function (data, type, full, meta) {
                             var status_number = full['verified_status'];
                             var status = {
                                 Approved: { title: 'Approved', class: 'badge-light-success' },
                                 Pending: { title: 'Pending', class: 'badge-light-info' },
                                 Failed: { title: 'Failed', class: 'badge-light-warning' },
+                            };
+                            if (typeof status[status_number] === 'undefined') {
+                            return data;
+                            }
+                            return (
+                            '<span class="badge rounded-pill ' +
+                            status[status_number].class +
+                            '">' +
+                            status[status_number].title +
+                            '</span>'
+                            );
+                        },
+                    },
+                    {
+                    // Label
+                        targets:[4],
+                        render: function (data, type, full, meta) {
+                            var status_number = full['email_verified_at'];
+                            var status = {
+                                yes: { title: 'Yes', class: 'badge-light-success' },
+                                no: { title: 'No', class: 'badge-light-warning' },
                             };
                             if (typeof status[status_number] === 'undefined') {
                             return data;
@@ -511,6 +552,11 @@
             var verified_status = $(this).data('verified_status')
             var referrel_url = $(this).data('referrel_url')
             var username = $(this).data('username')
+            var fullname = $(this).data('fullname')
+            var bank_account = $(this).data('bank_account')
+            var bank_name = $(this).data('bank_name')
+            var identity_card_no = $(this).data('identity_card_no')
+            var profile_image = $(this).data('profile_image')
             var identity_card = $(this).data('identity_card')
 
             $("#btn-approve"). attr("data-id", id);
@@ -521,7 +567,19 @@
             $('#show_identity_card').val(identity_card);
             $('#show_referrel_url').val(referrel_url);
             $("#show_verified_status").text(verified_status);
-            $('#view_frame').attr("src",  `{{asset('profile/${identity_card}')}}`);
+            // console.log(identity_card == '')
+            if(identity_card == ''){
+                $('#view_frame').attr("src",  `{{asset('images/logo/no_image.jpg')}}`);
+            }else{
+                $('#view_frame').attr("src",  `{{asset('profile/${identity_card}')}}`);
+            }
+
+            if(profile_image == ''){
+                $('#view_frame').attr("src",  `{{asset('images/logo/no_image.jpg')}}`);
+            }else{
+                $('#view_frame').attr("src",  `{{asset('profile/${profile_image}')}}`);
+            }
+
             // document.querySelector('#the-link').setAttribute('href',  `https://api.whatsapp.com/send/?phone=${receipt}`);
             document.querySelector('#the-link').setAttribute('href', 'https://api.whatsapp.com/send/?phone='+phone_no);
         });

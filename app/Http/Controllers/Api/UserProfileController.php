@@ -71,6 +71,7 @@ class UserProfileController extends Controller
      */
     public function update(Request $request, $user )
     {
+
         try {
             $profile = User::where('username', $user)->first();
 
@@ -97,6 +98,7 @@ class UserProfileController extends Controller
                 $profile->bank_name =  $request->bank_name ? $request->bank_name : $profile->bank_name;
                 $profile->fullname =  $request->fullname ? $request->fullname : $profile->fullname;
                 $profile->identity_card_no =  $request->identity_card_no ? $request->identity_card_no : $profile->identity_card_no;
+
                 $profile->save();
             }
             return response()->json([$profile], 201);

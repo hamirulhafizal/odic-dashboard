@@ -14,13 +14,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Models\UserProfile;
+use App\Notifications\PasswordResetNotification;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-
+use Carbon\Carbon;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Support\Facades\Notification;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +41,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('login', function (Request $request) {
+
 
         $request->validate([
             'email' => ['required', 'email'],
@@ -77,33 +80,36 @@ Route::prefix('auth')->name('auth.')->group(function () {
             $user = User::create($input);
             $user->sendEmailVerificationNotification();
 
+
             if($user->id < 10){
-                $user->username = 'odic00000'.$user->id;
-                $user->referrel_url = 'https://onedreamproperty/odic00000'.$user->id;
+                $user->username = 'ODIC00000'.$user->id;
+                $user->referrel_url = 'https://onedreamproperty/ODIC00000'.$user->id;
             }elseif($user->id < 100){
-                $user->username = 'odic0000'.$user->id;
-                $user->referrel_url = 'https://onedreamproperty/odic0000'.$user->id;
+                $user->username = 'ODIC0000'.$user->id;
+                $user->referrel_url = 'https://onedreamproperty/ODIC0000'.$user->id;
             }elseif($user->id < 1000){
-                $user->username = 'odic000'.$user->id;
-                $user->referrel_url = 'https://onedreamproperty/odic000'.$user->id;
+                $user->username = 'ODIC000'.$user->id;
+                $user->referrel_url = 'https://onedreamproperty/ODIC000'.$user->id;
             }else{
-                $user->username = 'odic00'.$user->id;
-                $user->referrel_url = 'https://onedreamproperty/odic00'.$user->id;
+                $user->username = 'ODIC00'.$user->id;
+                $user->referrel_url = 'https://onedreamproperty/ODIC00'.$user->id;
             }
 
             $user->verified_status = 'Pending';
 
             $user->save();
             $user->assignRole($request->input('roles'));
+            $tokenName = $user->email . '-' . $request->header('User-Agent');
+            $tokenObject = $user->createToken($tokenName);
+
+            return response()->json(['message' => 'Registration Success.']);
 
         } catch (\Throwable $th) {
+            dd($th);
             return response()->json(['message' => 'Registration Failed.'], 401);
         }
 
-        $tokenName = $user->email . '-' . $request->header('User-Agent');
-        $tokenObject = $user->createToken($tokenName);
 
-        return response()->json(['token' => $tokenObject->plainTextToken] + $user->toArray());
     });
 
     Route::get('logout', function (Request $request) {
@@ -122,15 +128,45 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('forgot-password', function (Request $request) {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        try {
+            $user = User::where('email', '=', $request->email)->first();
+        // dd(isset($user));
+        if (isset($user) == true) {
+            return redirect()->back()->withErrors(['email' => trans('User does not exist')]);
+        }
 
-        return $status === Password::RESET_LINK_SENT
-                    ? back()->with(['status' => __($status)])
-                    : back()->withErrors(['email' => __($status)]);
-    })->middleware('guest')->name('password.email');
+        DB::table('password_resets')->insert([
+            'email' => $request->email,
+            'token' => Str::random(60),
+            'created_at' => Carbon::now()
+        ]);
 
+        $tokenData = DB::table('password_resets')->where('email', $request->email)->first();
+
+        $project = [
+            'greeting' => 'Hi '.$user->name.',',
+            'body' => 'You are receiving this email because we received a password reset request for your account.',
+            'line2' => 'This password reset link will expire in 60 minutes.',
+            'line2' => 'If you did not request a password reset, no further action is required.',
+            'thanks' => 'Thank you this is from codeanddeploy.com',
+            'actionText' => 'Reset Password',
+            'actionURL' => url('/'),
+            'id' => 57
+        ];
+        // $status = Password::sendResetLink(
+        //     $request->only('email')
+        // );
+        Notification::send($user, new PasswordResetNotification($project));
+        } catch (\Throwable $th) {
+           dd($th);
+        }
+
+
+    //     return $status === Password::RESET_LINK_SENT
+    //                 ? back()->with(['status' => __($status)])
+    //                 : back()->withErrors(['email' => __($status)]);
+    // })->middleware('guest')->name('password.email');
+        })->middleware('guest')->name('passwords.email');
 
     // Route::post('reset-password', function (Request $request) {
     //     $request->validate([
@@ -196,4 +232,4 @@ Route::post('/email/verification-notification', function (Request $request) {
 Route::post('user-profile/edit/{user}', [UserProfileController::class,'update'])->middleware('auth:sanctum')->name('profile.store');
 Route::post('investments', [InvestmentController::class, 'store'])->middleware('auth:sanctum')->name('investment.store');
 Route::get('investments/{username}', [InvestmentController::class, 'investmentIndex'])->middleware('auth:sanctum')->name('investment.investmentIndex');
-Route::get('investments/username/{username}', [InvestmentController::class, 'getUserByUsername'])->middleware('auth:sanctum')->name('investment.getUsername');
+Route::get('username/{username}', [InvestmentController::class, 'getUserByUsername'])->middleware('auth:sanctum')->name('investment.getUsername');
