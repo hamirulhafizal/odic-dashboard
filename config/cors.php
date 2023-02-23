@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'api/auth/*', 'sanctum/csrf-cookie'],
+    'paths' => ['*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['POST', 'GET', 'DELETE', 'PUT', '*'],
 
-    'allowed_origins' => ['http://localhost:3000', 'https://odic.com.my'],
+    'allowed_origins' => ['*', 'http://localhost:3000', 'https://odic.com.my'],
 
     'allowed_origins_patterns' => [],
 

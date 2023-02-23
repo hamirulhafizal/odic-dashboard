@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Middleware\customCors;
 use App\Models\UserProfile;
 use App\Notifications\PasswordResetNotification;
 use Illuminate\Auth\Events\PasswordReset;
@@ -102,7 +103,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             $tokenName = $user->email . '-' . $request->header('User-Agent');
             $tokenObject = $user->createToken($tokenName);
 
-            return response()->json(['message' => 'Registration Success.']);
+            return response()->json(['token' => '$tokenObject->plainTextToken'], 200);
 
         } catch (\Throwable $th) {
             dd($th);
