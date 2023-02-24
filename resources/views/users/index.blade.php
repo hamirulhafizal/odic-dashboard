@@ -150,7 +150,7 @@
 
 {{-- show user modal --}}
 <div class="modal fade" id="showUserModal" tabindex="-1" aria-labelledby="showUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-l">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="showUserFormLabel">Show User</h5>
@@ -159,46 +159,77 @@
         <div class="modal-body">
             <form action="javascript:void(0)" id="showUserForm" name="showUserForm" class="form-horizontal" method="POST">
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group mb-2">
-                            <label for="staticEmail2" class="sr-only">Email</label>
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="email@example.com">
-                          </div>
-                          <div class="form-group mx-sm-3 mb-2">
-                            <label for="inputPassword2" class="sr-only">Password</label>
-                            <input type="password" class="form-control" id="inputPassword2" placeholder="Password">
-                          </div>
-                        <div class="form-group">
-
+                    <div class="row">
+                        <div class="col-6">
                             <strong> <label for="name" class="form-label">Name:</label></strong>
                             <input class="form-control-plaintext"  type="text" name="name" id="show_name"
                             style="padding-top:0px; position: relative; top: -6px" disabled>
 
-                            <strong><label for="edit_role" class="form-label"> Identity Card:</label></strong>
+                            <div class="form-group">
+                                <strong><label for="email" class="form-label">Email:</label></strong>
+                                <input class="form-control-plaintext" type="email"  name="email"  id="show_email"
+                                style="padding-top:0px; position: relative; top: -6px" disabled>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <strong><label for="profile_frame" class="form-label"> Profile Image:</label></strong>
                             <div style="text-align: center; z-index: 1; position: relative;">
                                 <input type="checkbox" id="zoomCheck">
                                 <label for="zoomCheck">
-                                    <img id="view_frame" src="" class="rounded mx-auto d-block " width="100"
+                                    <img id="profile_frame" src="" class="rounded mx-auto d-block " width="100"
                                     style="padding-top:0px; position: relative; top: -6px" disabled/>
                                 </label>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong><label for="email" class="form-label">Email:</label></strong>
-                            <input class="form-control-plaintext" type="email"  name="email"  id="show_email"
-                            style="padding-top:0px; position: relative; top: -6px" disabled>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <strong><label for="show_fullname" class="form-label">Fullname:</label></strong>
+                                <div style=" display: flex">
+                                    <input class="form-control-plaintext" type="text"  name="fullname"  id="show_fullname"
+                                    style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <strong><label for="show_phone" class="form-label">Phone No:</label></strong>
+                                <div style=" display: flex">
+                                    <input class="form-control-plaintext" type="phone_no"  name="phone_no"  id="show_phone"
+                                    style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
+                                    <a id="the-link" href="" target="_blank"><img src="{{asset('images/icons/whatsapp.png')}}" height="auto" width ="30" style="position: relative; top: -10px;" alt=""></a>
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <strong><label for="show_bank_account" class="form-label">Bank Account:</label></strong>
+                                <div style=" display: flex">
+                                    <input class="form-control-plaintext" type="text"  name="bank_account"  id="show_bank_account"
+                                    style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong><label for="email" class="form-label">Phone No:</label></strong>
-                            <div style=" display: flex">
-                                <input class="form-control-plaintext" type="phone_no"  name="phone_no"  id="show_phone"
-                                style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
-                                <a id="the-link" href="" target="_blank"><img src="{{asset('images/icons/whatsapp.png')}}" height="auto" width ="30" style="position: relative; top: -10px;" alt=""></a>
 
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <strong><label for="show_bank_account" class="form-label">Bank Account:</label></strong>
+                                <div style=" display: flex">
+                                    <input class="form-control-plaintext" type="text"  name="bank_account"  id="show_bank_account"
+                                    style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <strong><label for="show_bank_account" class="form-label">Bank Name:</label></strong>
+                                <div style=" display: flex">
+                                    <input class="form-control-plaintext" type="text"  name="bank_name"  id="show_bank_name"
+                                    style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -564,7 +595,11 @@
             $('#show_username').val(username);
             $('#show_email').val(email);
             $('#show_phone').val(phone_no);
-            $('#show_identity_card').val(identity_card);
+            $('#show_fullname').val(fullname);
+            $('#show_bank_account').val(bank_account);
+            $('#show_bank_name').val(bank_name);
+            // $('#show_bank_name').val(bank_name);
+            // $('#show_identity_card').val(identity_card);
             $('#show_referrel_url').val(referrel_url);
             $("#show_verified_status").text(verified_status);
             // console.log(identity_card == '')
@@ -575,9 +610,9 @@
             }
 
             if(profile_image == ''){
-                $('#view_frame').attr("src",  `{{asset('images/logo/no_image.jpg')}}`);
+                $('#profile_frame').attr("src",  `{{asset('images/logo/no_image.jpg')}}`);
             }else{
-                $('#view_frame').attr("src",  `{{asset('profile/${profile_image}')}}`);
+                $('#profile_frame').attr("src",  `{{asset('profile/${profile_image}')}}`);
             }
 
             // document.querySelector('#the-link').setAttribute('href',  `https://api.whatsapp.com/send/?phone=${receipt}`);
