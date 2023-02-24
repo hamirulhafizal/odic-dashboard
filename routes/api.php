@@ -103,7 +103,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             $tokenName = $user->email . '-' . $request->header('User-Agent');
             $tokenObject = $user->createToken($tokenName);
 
-            return response()->json(['token' => '$tokenObject->plainTextToken'], 200);
+            return response()->json(['token' => $tokenObject->plainTextToken] + $user->toArray());
 
         } catch (\Throwable $th) {
             dd($th);
@@ -220,7 +220,8 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request) {
         event(new Verified($user));
     }
 
-    return redirect('/');
+    return redirect('https://odic.com.my');
+    // return redirect('/');
 
 })->name('verification.verify');
 
