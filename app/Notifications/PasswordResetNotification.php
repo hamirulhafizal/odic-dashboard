@@ -42,14 +42,14 @@ class PasswordResetNotification extends Notification
      */
     public function toMail($notifiable)
     {
-      
+
         return (new MailMessage)
         ->greeting($this->project['greeting'])
         ->line($this->project['body'])
         ->action($this->project['actionText'], $this->project['actionURL'])
-        ->line($this->project['body1'])
-        ->line($this->project['line1'])
-        ->line($this->project['line2'])
+        // ->line($this->project['body1'])
+        ->line($this->project['line'])
+        // ->line($this->project['line2'])
         ->line($this->project['thanks']);
     }
     /**

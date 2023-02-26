@@ -23,6 +23,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
 /*
@@ -42,22 +43,34 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('login', function (Request $request) {
+        try {
+            $request->validate([
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+            ]);
+
+            $user = User::firstWhere(['email' => $request->email]);
+            if (! $user->hasVerifiedEmail()) {
+                $user->sendEmailVerificationNotification();
+                return response()->json(["msg" => "Email not yet verification! Email verification link sent on your email address."]);
+            }
+
+            $credentials = $request->only('email', 'password');
+            if (Auth::attempt($credentials)) {
+                $tokenName = $user->email . '-' . $request->header('User-Agent');
+                $tokenObject = $user->createToken($tokenName);
+
+                return response()->json(['token' => $tokenObject->plainTextToken] + $user->toArray());
+            }else{
+                return response()->json(['error'=>'Login details are not valid']);
+            }
 
 
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
 
-        $user = User::firstWhere(['email' => $request->email]);
-        if (! $user->hasVerifiedEmail()) {
-            $user->sendEmailVerificationNotification();
-            return response()->json(["msg" => "Email not yet verification! Email verification link sent on your email address."]);
+        } catch (\Throwable $th) {
+            dd($th);
         }
 
-        $tokenName = $user->email . '-' . $request->header('User-Agent');
-        $tokenObject = $user->createToken($tokenName);
-
-        return response()->json(['token' => $tokenObject->plainTextToken] + $user->toArray());
     });
 
     Route::post('register', function (Request $request) {
@@ -110,7 +123,6 @@ Route::prefix('auth')->name('auth.')->group(function () {
             return response()->json(['message' => 'Registration Failed.'], 401);
         }
 
-
     });
 
     Route::get('logout', function (Request $request) {
@@ -126,49 +138,71 @@ Route::prefix('auth')->name('auth.')->group(function () {
     //     return view('auth.passwords.email');
     // })->middleware('guest')->name('password.request');
 
-    Route::post('forgot-password', function (Request $request) {
+    Route::post('forgot-pwd', function (Request $request) {
         $request->validate(['email' => 'required|email']);
 
         try {
             $user = User::where('email', '=', $request->email)->first();
-        // dd(isset($user));
-        if (isset($user) == true) {
-            return redirect()->back()->withErrors(['email' => trans('User does not exist')]);
-        }
+            DB::table('password_resets')->insert([
+                'email' => $request->email,
+                'token' => Str::random(60),
+                'created_at' => Carbon::now()
+            ]);
 
-        DB::table('password_resets')->insert([
-            'email' => $request->email,
-            'token' => Str::random(60),
-            'created_at' => Carbon::now()
+            $tokenData = DB::table('password_resets')->where('email', $request->email)->first();
+
+            $forgetURL = 'https://odic.com.my/forget-password/'.$tokenData->token;
+
+            $project = [
+                'greeting' => 'Hi '.$user->name.',',
+                'body' => 'You are receiving this email because we received a password reset request for your account.',
+                'line' => 'This password reset link will expire in 60 minutes.',
+                'thanks' => 'Thank you this is from One Dream Property.',
+                'actionText' => 'Reset Password',
+                'actionURL' => url($forgetURL),
+            ];
+
+            Notification::send($user, new PasswordResetNotification($project));
+            return response()->json(['token' => $tokenData->token] + $user->toArray());
+
+            if (isset($user) == true) {
+                return redirect()->back()->withErrors(['email' => trans('User does not exist')]);
+            }
+
+        } catch (\Throwable $th) {
+            return redirect()->back()->withErrors(['message' => trans('Failed to send an Email.')]);
+        }
+    });
+
+    Route::post('new-pwd', function (Request $request) {
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'token_' => 'required',
+            'password' => 'required|confirmed|min:6'
         ]);
 
-        $tokenData = DB::table('password_resets')->where('email', $request->email)->first();
-
-        $project = [
-            'greeting' => 'Hi '.$user->name.',',
-            'body' => 'You are receiving this email because we received a password reset request for your account.',
-            'line2' => 'This password reset link will expire in 60 minutes.',
-            'line2' => 'If you did not request a password reset, no further action is required.',
-            'thanks' => 'Thank you this is from codeanddeploy.com',
-            'actionText' => 'Reset Password',
-            'actionURL' => url('/'),
-            'id' => 57
-        ];
-        // $status = Password::sendResetLink(
-        //     $request->only('email')
-        // );
-        Notification::send($user, new PasswordResetNotification($project));
-        } catch (\Throwable $th) {
-           dd($th);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
 
+        try {
+            $pwd = DB::table('password_resets')
+            ->where('email', $request->email)
+            ->where('token', $request->token_)
+            ->first();
 
-    //     return $status === Password::RESET_LINK_SENT
-    //                 ? back()->with(['status' => __($status)])
-    //                 : back()->withErrors(['email' => __($status)]);
-    // })->middleware('guest')->name('password.email');
-        })->middleware('guest')->name('passwords.email');
+            if($pwd != null){
+                $user = User::where('email', $request->email)->first();
+                $user->update(['password' => Hash::make($request->password)]);
+            }
 
+            return response()->json(['token' => $user->toArray()]);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+
+    });
     // Route::post('reset-password', function (Request $request) {
     //     $request->validate([
     //         'token' => 'required',
