@@ -268,4 +268,5 @@ Route::post('/email/verification-notification', function (Request $request) {
 Route::post('user-profile/edit/{user}', [UserProfileController::class,'update'])->middleware('auth:sanctum')->name('profile.store');
 Route::post('investments', [InvestmentController::class, 'store'])->middleware('auth:sanctum')->name('investment.store');
 Route::get('investments/{username}', [InvestmentController::class, 'investmentIndex'])->middleware('auth:sanctum')->name('investment.investmentIndex');
+Route::post('investments/{investment}', [InvestmentController::class, 'withdrawInvestment'])->middleware('auth:sanctum')->name('investment.investmentIndex');
 Route::get('username/{username}', [InvestmentController::class, 'getUserByUsername'])->middleware('auth:sanctum')->name('investment.getUsername');

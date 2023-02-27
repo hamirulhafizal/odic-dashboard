@@ -71,11 +71,14 @@ class InvestmentController extends Controller
 
     public function investmentIndex($username)
     {
+        $token= request()->bearerToken();
+        dd($token);
         try {
             $data = Investments::where('username', $username)
             ->join('investment_status', 'investment_status.investment_id', '=' ,'investments.id')
             ->select('investments.*', 'investment_status.name as status')
-            ->get();
+            ->orderBy('investment_status.created_at', 'DESC')
+            ->first();
             return response()->json($data, 201);
         } catch (\Throwable $th) {
             throw $th;
@@ -143,7 +146,7 @@ class InvestmentController extends Controller
                 $roi_amount =  $request->amount * 27 / 100;
                 $investment->roi = 27;
                 $investment->roi_amount = $roi_amount;
-            }elseif($request->amount > 30000){
+            }elseif($request->amount >= 30000){
                 $roi_amount =  $request->amount * 30 / 100;
                 $investment->roi = 30;
                 $investment->roi_amount = $roi_amount;
@@ -182,6 +185,27 @@ class InvestmentController extends Controller
     public function show($id)
     {
         //
+    }
+
+    public function withdrawInvestment(Request $request, $investment)
+    {
+        try {
+
+                $investProgress = InvestmentStatus::where('investment_id', $investment)->where('name', 'Progress')->first();
+
+                if($investProgress != null){
+                    $investmentStatus = new InvestmentStatus();
+                    $investmentStatus->investment_id = $investment;
+                    $investmentStatus->name = 'Withdraw';
+                    $investmentStatus->save();
+                }
+
+                $message = array('message' => 'Investment status updated successfully!', 'title' => 'Success!');
+                return response()->json($message);
+        } catch (\Throwable $th) {
+            $message = array('message' => 'Failed to updated Investment status!', 'title' => 'Failed!');
+            return response()->json($message);
+        }
     }
 
     /**
