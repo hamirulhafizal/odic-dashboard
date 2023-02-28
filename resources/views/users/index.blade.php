@@ -189,8 +189,8 @@
                             <div class="form-group">
                                 <strong><label for="show_fullname" class="form-label">Fullname:</label></strong>
                                 <div style=" display: flex">
-                                    <input class="form-control-plaintext" type="text"  name="fullname"  id="show_fullname"
-                                    style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
+                                    <textarea class="form-control-plaintext" type="text"  name="fullname"  id="show_fullname"
+                                     disabled></textarea>
                                 </div>
                             </div>
                         </div>
@@ -204,13 +204,13 @@
 
                                 </div>
                             </div>
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <strong><label for="show_bank_account" class="form-label">Bank Account:</label></strong>
                                 <div style=" display: flex">
                                     <input class="form-control-plaintext" type="text"  name="bank_account"  id="show_bank_account"
                                     style="padding-top:0px; position: relative; top: -6px; " disabled>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
 
@@ -226,9 +226,49 @@
                         </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <strong><label for="show_bank_account" class="form-label">Bank Name:</label></strong>
+                                <strong><label for="show_bank_name" class="form-label">Bank Name:</label></strong>
                                 <div style=" display: flex">
                                     <input class="form-control-plaintext" type="text"  name="bank_name"  id="show_bank_name"
+                                    style="padding-top:0px; position: relative; top: -6px; " disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <strong><label for="show_address" class="form-label">Address:</label></strong>
+                                <div style=" display: flex">
+                                    <input class="form-control-plaintext" type="text"  name="address"  id="show_address"
+                                    style="padding-top:0px; position: relative; top: -6px; " disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <strong><label for="show_city" class="form-label">City:</label></strong>
+                                <div style=" display: flex">
+                                    <input class="form-control-plaintext" type="text"  name="city"  id="show_city"
+                                    style="padding-top:0px; position: relative; top: -6px; " disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <strong><label for="show_state" class="form-label">State:</label></strong>
+                                <div style=" display: flex">
+                                    <input class="form-control-plaintext" type="text"  name="state"  id="show_state"
+                                    style="padding-top:0px; position: relative; top: -6px; " disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <strong><label for="show_postcode" class="form-label">City:</label></strong>
+                                <div style=" display: flex">
+                                    <input class="form-control-plaintext" type="text"  name="postcode"  id="show_postcode"
                                     style="padding-top:0px; position: relative; top: -6px; " disabled>
                                 </div>
                             </div>
@@ -590,10 +630,10 @@
             var identity_card_no = $(this).data('identity_card_no')
             var profile_image = $(this).data('profile_image')
             var identity_card = $(this).data('identity_card')
-            
-            
-            console.log("phone_no", typeof phone_no)
-            console.log("phone_no", bank_name)
+            var address = $(this).data('address')
+            var city = $(this).data('city')
+            var state = $(this).data('state')
+            var postcode = $(this).data('postcode')
 
             $("#btn-approve"). attr("data-id", id);
             $('#show_name').val(name);
@@ -603,6 +643,10 @@
             $('#show_fullname').val(fullname);
             $('#show_bank_account').val(bank_account);
             $('#show_bank_name').val(bank_name);
+            $('#show_address').val(address);
+            $('#show_city').val(city);
+            $('#show_state').val(state);
+            $('#show_postcode').val(postcode);
             // $('#show_bank_name').val(bank_name);
             // $('#show_identity_card').val(identity_card);
             $('#show_referrel_url').val(referrel_url);

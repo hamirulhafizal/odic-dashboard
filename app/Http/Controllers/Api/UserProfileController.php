@@ -99,7 +99,10 @@ class UserProfileController extends Controller
                 $profile->bank_name =  $request->bank_name ? $request->bank_name : $profile->bank_name;
                 $profile->fullname =  $request->fullname ? $request->fullname : $profile->fullname;
                 $profile->identity_card_no =  $request->identity_card_no ? $request->identity_card_no : $profile->identity_card_no;
-
+                $profile->address =  $request->address ? $request->address : $profile->address;
+                $profile->city =  $request->city ? $request->city : $profile->city;
+                $profile->state =  $request->state ? $request->state : $profile->state;
+                $profile->postcode =  $request->postcode ? $request->postcode : $profile->postcode;
                 $profile->save();
             }
             return response()->json([$profile], 201);

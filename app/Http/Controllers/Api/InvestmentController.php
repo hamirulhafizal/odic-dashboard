@@ -227,7 +227,11 @@ class InvestmentController extends Controller
     {
         try {
             $investProgress = InvestmentStatus::where('investment_id', $id)->first();
-            $investProgress->name = $request->status;
+            if($investProgress->name == 'Pending'){
+                $investProgress->name = $request->status;
+            }else{
+                $investProgress->name = 'Completed';
+            }
             $investProgress->save();
 
             $message = array('message' => 'Investment status updated successfully!', 'title' => 'Success!');

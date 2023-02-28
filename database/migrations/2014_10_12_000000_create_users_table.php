@@ -25,6 +25,10 @@ class CreateUsersTable extends Migration
             $table->string('bank_name')->nullable();
             $table->string('username')->unique()->nullable();
             $table->string('identity_card')->nullable();
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->integer('postcode')->nullable();
             $table->string('fullname')->unique()->nullable();
             $table->string('identity_card_no')->nullable();
             $table->string('verified_status')->nullable();;
