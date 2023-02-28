@@ -75,7 +75,7 @@ class InvestmentController extends Controller
             $data = Investments::where('username', $username)
             ->join('investment_status', 'investment_status.investment_id', '=' ,'investments.id')
             ->select('investments.*', 'investment_status.name as status')
-            ->orderBy('investment_status.created_at', 'DESC')
+            // ->orderBy('investment_status.created_at', 'DESC')
             ->first();
             return response()->json($data, 201);
         } catch (\Throwable $th) {
@@ -188,18 +188,12 @@ class InvestmentController extends Controller
     public function withdrawInvestment(Request $request, $investment)
     {
         try {
+            $investProgress = InvestmentStatus::where('investment_id', $investment)->first();
+            $investProgress->name = 'Withdraw';
+            $investProgress->save();
 
-                $investProgress = InvestmentStatus::where('investment_id', $investment)->where('name', 'Progress')->first();
-
-                if($investProgress != null){
-                    $investmentStatus = new InvestmentStatus();
-                    $investmentStatus->investment_id = $investment;
-                    $investmentStatus->name = 'Withdraw';
-                    $investmentStatus->save();
-                }
-
-                $message = array('message' => 'Investment status updated successfully!', 'title' => 'Success!');
-                return response()->json($message);
+            $message = array('message' => 'Investment status updated successfully!', 'title' => 'Success!');
+            return response()->json($message);
         } catch (\Throwable $th) {
             $message = array('message' => 'Failed to updated Investment status!', 'title' => 'Failed!');
             return response()->json($message);
@@ -232,40 +226,16 @@ class InvestmentController extends Controller
     public function approval(Request $request, $id)
     {
         try {
-            if($request->status == 'Progress'){
-                $investProgress = InvestmentStatus::where('investment_id', $id)->where('name', 'Progress')->first();
-                $investFail = InvestmentStatus::where('investment_id', $id)->where('name', 'Fail')->first();
-               if($investProgress == null &&  $investFail == null){
-                $investmentStatus = new InvestmentStatus();
-                $investmentStatus->investment_id = $id;
-                $investmentStatus->name = $request->status;
-                $investmentStatus->save();
-               }elseif(isset($investFail)){
-                $investFail->name = $request->status;
-                $investFail->save();
-               }
-            }elseif($request->status == 'Fail'){
-                $investProgress = InvestmentStatus::where('investment_id', $id)->where('name', 'Progress')->first();
-                $investFail = InvestmentStatus::where('investment_id', $id)->where('name', 'Fail')->first();
-                if($investProgress == null &&  $investFail == null){
-                    $investmentStatus = new InvestmentStatus();
-                    $investmentStatus->investment_id = $id;
-                    $investmentStatus->name = $request->status;
-                    $investmentStatus->save();
-                   }elseif(isset($investProgress)){
-                    $investProgress->name = $request->status;
-                    $investProgress->save();
-                   }
-            }
+            $investProgress = InvestmentStatus::where('investment_id', $id)->first();
+            $investProgress->name = $request->status;
+            $investProgress->save();
+
             $message = array('message' => 'Investment status updated successfully!', 'title' => 'Success!');
             return response()->json($message);
         } catch (\Throwable $th) {
             $message = array('message' => 'Failed to updated Investment status!', 'title' => 'Failed!');
             return response()->json($message);
         }
-
-
-
     }
 
 
