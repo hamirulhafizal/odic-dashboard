@@ -149,8 +149,8 @@
 
 
 {{-- show user modal --}}
-<div class="modal fade" id="showUserModal" tabindex="-1" aria-labelledby="showUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog ">
+<div class="modal fade modal-xl" id="showUserModal" tabindex="-1" aria-labelledby="showUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="showUserFormLabel">Show User</h5>
@@ -173,7 +173,8 @@
                         </div>
                         <div class="col-6">
                             <strong><label for="profile_frame" class="form-label"> Profile Image:</label></strong>
-                            <div style="text-align: center; z-index: 1; position: relative;">
+                            <div style="text-align: center; z-index: 1; position: relative; display: flex; padding-bottom: 6%;
+                            ">
                                 <input type="checkbox" id="zoomCheck">
                                 <label for="zoomCheck">
                                     <img id="profile_frame" src="" class="rounded mx-auto d-block " width="100"
@@ -207,7 +208,7 @@
                                 <strong><label for="show_bank_account" class="form-label">Bank Account:</label></strong>
                                 <div style=" display: flex">
                                     <input class="form-control-plaintext" type="text"  name="bank_account"  id="show_bank_account"
-                                    style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
+                                    style="padding-top:0px; position: relative; top: -6px; " disabled>
                                 </div>
                             </div>
                         </div>
@@ -219,7 +220,7 @@
                                 <strong><label for="show_bank_account" class="form-label">Bank Account:</label></strong>
                                 <div style=" display: flex">
                                     <input class="form-control-plaintext" type="text"  name="bank_account"  id="show_bank_account"
-                                    style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
+                                    style="padding-top:0px; position: relative; top: -6px; " disabled>
                                 </div>
                             </div>
                         </div>
@@ -228,7 +229,7 @@
                                 <strong><label for="show_bank_account" class="form-label">Bank Name:</label></strong>
                                 <div style=" display: flex">
                                     <input class="form-control-plaintext" type="text"  name="bank_name"  id="show_bank_name"
-                                    style="padding-top:0px; position: relative; top: -6px; width: 94px" disabled>
+                                    style="padding-top:0px; position: relative; top: -6px; " disabled>
                                 </div>
                             </div>
                         </div>
@@ -236,7 +237,7 @@
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><label for="edit_role" class="form-label"> Identity Card:</label></strong>
-                            <div style="text-align: center; z-index: 1; position: relative;">
+                            <div style="text-align: center; z-index: 1; position: relative; display: flex; justify-content: start; padding-bottom: 4%;">
                                 <input type="checkbox" id="zoomCheck">
                                 <label for="zoomCheck">
                                     <img id="view_frame" src="" class="rounded mx-auto d-block " width="350"
@@ -589,6 +590,10 @@
             var identity_card_no = $(this).data('identity_card_no')
             var profile_image = $(this).data('profile_image')
             var identity_card = $(this).data('identity_card')
+            
+            
+            console.log("phone_no", typeof phone_no)
+            console.log("phone_no", bank_name)
 
             $("#btn-approve"). attr("data-id", id);
             $('#show_name').val(name);
@@ -616,7 +621,7 @@
             }
 
             // document.querySelector('#the-link').setAttribute('href',  `https://api.whatsapp.com/send/?phone=${receipt}`);
-            document.querySelector('#the-link').setAttribute('href', 'https://api.whatsapp.com/send/?phone='+phone_no);
+         if(phone_no != '') document.querySelector('#the-link').setAttribute('href', 'https://api.whatsapp.com/send/?phone='+phone_no);
         });
 
         $('body').on('click', '#btn-approve', function (event) {

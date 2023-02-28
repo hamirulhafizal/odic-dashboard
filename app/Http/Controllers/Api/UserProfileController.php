@@ -94,6 +94,7 @@ class UserProfileController extends Controller
                     }
                 }
 
+                $profile->phone_no =  $request->phone_no ? $request->phone_no : $profile->phone_no;
                 $profile->bank_account =  $request->bank_account ? $request->bank_account : $profile->bank_account;
                 $profile->bank_name =  $request->bank_name ? $request->bank_name : $profile->bank_name;
                 $profile->fullname =  $request->fullname ? $request->fullname : $profile->fullname;
