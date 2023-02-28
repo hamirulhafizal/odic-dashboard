@@ -71,8 +71,6 @@ class InvestmentController extends Controller
 
     public function investmentIndex($username)
     {
-        $token= request()->bearerToken();
-        dd($token);
         try {
             $data = Investments::where('username', $username)
             ->join('investment_status', 'investment_status.investment_id', '=' ,'investments.id')
