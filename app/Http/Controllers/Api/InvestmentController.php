@@ -76,7 +76,7 @@ class InvestmentController extends Controller
             ->join('investment_status', 'investment_status.investment_id', '=' ,'investments.id')
             ->select('investments.*', 'investment_status.name as status')
             // ->orderBy('investment_status.created_at', 'DESC')
-            ->first();
+            ->get();
             return response()->json($data, 201);
         } catch (\Throwable $th) {
             throw $th;
