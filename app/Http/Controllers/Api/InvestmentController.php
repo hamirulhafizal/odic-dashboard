@@ -165,7 +165,7 @@ class InvestmentController extends Controller
             $investmentStatus->name = 'Pending';
             $investmentStatus->save();
 
-            $message = array('Investment ID' => $investment->id, 'message' => 'Investment created successfully!', 'title' => 'Success!');
+            $message = array('Investment_id'=> $investment->id, 'message' => 'Investment created successfully!', 'title' => 'Success!');
             return response()->json($message);
             // return back()->with('success', 'Success! User created');
         } catch (\Throwable $th) {
