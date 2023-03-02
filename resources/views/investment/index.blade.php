@@ -539,7 +539,7 @@
             var status = $(this).data('status')
             var amount =  addCommas(b_amount)
             var roi_amount =  addCommas(b_roi_amount)
-            
+
             $("#btn-approve"). attr("data-id", id);
             $("#btn-reject"). attr("data-id", id);
             $('#show_username').val(username);
@@ -568,8 +568,13 @@
                 dataType: 'json',
                 success: function(data){
                     setTimeout(() => {
-                        toastr.success(data.message, data.title);
-                        window.location.reload();
+                        console.log(data)
+                        if(data.title == 'Failed!'){
+                            toastr.error(data.message, data.title);
+                        }else{
+                            toastr.success(data.message, data.title);
+                        }
+                        // window.location.reload();
                     },1500)
                     $("#btn-save").html('Submit');
                     $("#btn-save"). attr("disabled", false);

@@ -15,6 +15,7 @@ class Investments extends Model
         'roi',
         'slot',
         'roi_amount',
-        'receipt'
+        'receipt',
+        'dividen_date'
     ];
 }

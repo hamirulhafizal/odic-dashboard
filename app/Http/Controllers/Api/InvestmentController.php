@@ -27,7 +27,18 @@ class InvestmentController extends Controller
         $from = Carbon::parse($request->get('filter_from'));
         $to_at = Carbon::parse( $request->get('filter_to'));
         $to = $to_at->format('Y-m-d 23:59:59');
+        $investment = Investments::get();
 
+        foreach($investment as $i){
+            if($i->dividen_date <= today()){
+                $investmentStatus = InvestmentStatus::find($i->id)->first();
+                if($investmentStatus->name == 'Progress'){
+                    $investmentStatus->name = 'Withdraw';
+                    $investmentStatus->save();
+                }
+
+            }
+        }
         // $date_string = "{$from->format('Y-m-d')},{$to->format('Y-m-d')}";
         if ($request->ajax()) {
             $data = Investments::join('investment_status', 'investment_status.investment_id', '=' ,'investments.id')
@@ -189,7 +200,7 @@ class InvestmentController extends Controller
     {
         try {
             $investProgress = InvestmentStatus::where('investment_id', $investment)->first();
-            $investProgress->name = 'Withdraw';
+            $investProgress->name = 'Floating';
             $investProgress->save();
 
             $message = array('message' => 'Investment status updated successfully!', 'title' => 'Success!');
@@ -227,13 +238,20 @@ class InvestmentController extends Controller
     {
         try {
             $investProgress = InvestmentStatus::where('investment_id', $id)->first();
+            $investment = Investments::find($id)->first();
+            $created_at = $investProgress->created_at;
+            $effectiveDate = date('Y-m-d H:i:s', strtotime("+14 months", strtotime($created_at)));
+            $date = Carbon::parse($effectiveDate);
+
             if($investProgress->name == 'Pending'){
                 $investProgress->name = $request->status;
+                $investment->dividen_date = $date;
+
             }else{
                 $investProgress->name = 'Completed';
             }
             $investProgress->save();
-
+            $investment->save();
             $message = array('message' => 'Investment status updated successfully!', 'title' => 'Success!');
             return response()->json($message);
         } catch (\Throwable $th) {

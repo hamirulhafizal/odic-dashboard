@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Middleware\customCors;
+use App\Models\Investments;
+use App\Models\InvestmentStatus;
 use App\Models\UserProfile;
 use App\Notifications\PasswordResetNotification;
 use Illuminate\Auth\Events\PasswordReset;
@@ -48,6 +50,19 @@ Route::prefix('auth')->name('auth.')->group(function () {
                 'email' => ['required', 'email'],
                 'password' => ['required'],
             ]);
+
+            $investment = Investments::get();
+
+            foreach($investment as $i){
+                if($i->dividen_date <= today()){
+                    $investmentStatus = InvestmentStatus::find($i->id)->first();
+                    if($investmentStatus->name == 'Progress'){
+                        $investmentStatus->name = 'Withdraw';
+                        $investmentStatus->save();
+                    }
+
+                }
+            }
 
             $user = User::firstWhere(['email' => $request->email]);
             if (! $user->hasVerifiedEmail()) {

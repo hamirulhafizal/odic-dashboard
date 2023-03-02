@@ -266,7 +266,7 @@
                         </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <strong><label for="show_postcode" class="form-label">City:</label></strong>
+                                <strong><label for="show_postcode" class="form-label">Postcode:</label></strong>
                                 <div style=" display: flex">
                                     <input class="form-control-plaintext" type="text"  name="postcode"  id="show_postcode"
                                     style="padding-top:0px; position: relative; top: -6px; " disabled>

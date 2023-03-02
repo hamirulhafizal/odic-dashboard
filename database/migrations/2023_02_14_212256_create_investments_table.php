@@ -21,6 +21,7 @@ class CreateInvestmentsTable extends Migration
             $table->integer('slot')->nullable();
             $table->integer('roi_amount')->nullable();
             $table->string('receipt')->nullable();
+            $table->timestamp('dividen_date')->nullable();
             $table->timestamps();
         });
     }
