@@ -31,7 +31,7 @@ class InvestmentController extends Controller
 
         foreach($investment as $i){
             if($i->dividen_date <= today()){
-                $investmentStatus = InvestmentStatus::find($i->id)->first();
+                $investmentStatus = InvestmentStatus::find($i->id);
                 if($investmentStatus->name == 'Progress'){
                     $investmentStatus->name = 'Withdraw';
                     $investmentStatus->save();
@@ -238,7 +238,7 @@ class InvestmentController extends Controller
     {
         try {
             $investProgress = InvestmentStatus::where('investment_id', $id)->first();
-            $investment = Investments::find($id)->first();
+            $investment = Investments::find($id);
             $created_at = $investProgress->created_at;
             $effectiveDate = date('Y-m-d H:i:s', strtotime("+14 months", strtotime($created_at)));
             $date = Carbon::parse($effectiveDate);
@@ -246,12 +246,19 @@ class InvestmentController extends Controller
             if($investProgress->name == 'Pending'){
                 $investProgress->name = $request->status;
                 $investment->dividen_date = $date;
+                $investment->save();
+                $investProgress->save();
 
             }else{
-                $investProgress->name = 'Completed';
+                if($investment->dividen_date <= today() && $investProgress->name == 'Floating'){
+                    $investProgress->name = 'Completed';
+                    $investProgress->save();
+                }else{
+                    $message = array('message' => 'Investment is not matured to withdraw', 'title' => 'Failed!');
+                    return response()->json($message);
+                }
             }
-            $investProgress->save();
-            $investment->save();
+
             $message = array('message' => 'Investment status updated successfully!', 'title' => 'Success!');
             return response()->json($message);
         } catch (\Throwable $th) {

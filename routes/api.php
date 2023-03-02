@@ -55,7 +55,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
             foreach($investment as $i){
                 if($i->dividen_date <= today()){
-                    $investmentStatus = InvestmentStatus::find($i->id)->first();
+                    $investmentStatus = InvestmentStatus::find($i->id);
                     if($investmentStatus->name == 'Progress'){
                         $investmentStatus->name = 'Withdraw';
                         $investmentStatus->save();

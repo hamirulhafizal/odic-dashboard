@@ -574,7 +574,7 @@
                         }else{
                             toastr.success(data.message, data.title);
                         }
-                        // window.location.reload();
+                        window.location.reload();
                     },1500)
                     $("#btn-save").html('Submit');
                     $("#btn-save"). attr("disabled", false);
