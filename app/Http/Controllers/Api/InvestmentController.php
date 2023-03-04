@@ -30,7 +30,11 @@ class InvestmentController extends Controller
         $investment = Investments::get();
 
         foreach($investment as $i){
-            if($i->dividen_date <= today()){
+            $date = date(today());
+
+            $formatted_date = date('y-m-d h:i:s');
+            // dump($i->dividen_date, $date->format('Y-m-d H:i:s'));
+            if($i->dividen_date <= $formatted_date){
                 $investmentStatus = InvestmentStatus::find($i->id);
                 if($investmentStatus->name == 'Progress'){
                     $investmentStatus->name = 'Withdraw';
