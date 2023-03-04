@@ -254,7 +254,8 @@ class InvestmentController extends Controller
                 $investProgress->save();
 
             }else{
-                if($investment->dividen_date <= today() && $investProgress->name == 'Floating'){
+                $formatted_date = date('y-m-d h:i:s');
+                if($investment->dividen_date <= $formatted_date && $investProgress->name == 'Floating'){
                     $investProgress->name = 'Completed';
                     $investProgress->save();
                 }else{
