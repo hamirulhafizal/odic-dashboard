@@ -166,7 +166,9 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
             $tokenData = DB::table('password_resets')->where('email', $request->email)->first();
 
-            $forgetURL = 'https://odic.com.my/forget-password/'.$tokenData->token;
+           // $forgetURL = 'https://odic.com.my/forget-password/'.$tokenData->token;
+        
+            $forgetURL = "https://odic.com.my/forget-password/{$tokenData->token}?email={$request->email}";
 
             $project = [
                 'greeting' => 'Hi '.$user->name.',',

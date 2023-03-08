@@ -32,7 +32,7 @@ class InvestmentController extends Controller
         foreach($investment as $i){
             $date = date(today());
 
-            $formatted_date = date('y-m-d h:i:s');
+            $formatted_date = date('Y-m-d H:i:s');
             // dump($i->dividen_date, $date->format('Y-m-d H:i:s'));
             if($i->dividen_date <= $formatted_date){
                 $investmentStatus = InvestmentStatus::find($i->id);
@@ -254,7 +254,7 @@ class InvestmentController extends Controller
                 $investProgress->save();
 
             }else{
-                $formatted_date = date('y-m-d h:i:s');
+                $formatted_date = date('Y-m-d H:i:s');
                 if($investment->dividen_date <= $formatted_date && $investProgress->name == 'Floating'){
                     $investProgress->name = 'Completed';
                     $investProgress->save();
