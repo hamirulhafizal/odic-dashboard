@@ -36,6 +36,8 @@ class User extends Authenticatable
         'identity_card_no',
         'verified_status',
         'referrel_url',
+        'od_partner',
+        'od_member'
     ];
 
     /**

@@ -27,6 +27,7 @@ use Carbon\Carbon;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
+use Spatie\Permission\Models\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,10 +90,22 @@ Route::prefix('auth')->name('auth.')->group(function () {
     });
 
     Route::post('register', function (Request $request) {
+        $roles = Role::all()->pluck('name')->toArray();
+        
+        if(!in_array('Partner', $roles)){
+            Role::create(['name' => 'Partner']);
+        }
+        
+        if(!in_array('Member', $roles)){
+            Role::create(['name' => 'Member']);
+        }
+
         try {
             $validator = Validator::make($request->all(), [
                 'email' => 'required|email|unique:users,email',
-                'password' => 'required|confirmed|min:6'
+                'password' => 'required|confirmed|min:6',
+                'od_partner' => 'required',
+                'od_member' => 'required'
             ]);
 
             if ($validator->fails()) {
@@ -104,6 +117,8 @@ Route::prefix('auth')->name('auth.')->group(function () {
                 'name' => $request->name,
                 'phone_no' => $request->phone_no,
                 'password' => Hash::make($request->password),
+                'od_partner' => strtoupper($request->od_partner),
+                'od_member' => strtoupper($request->od_member)
             ];
 
             $user = User::create($input);
@@ -148,10 +163,6 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
         return response()->json(['message' => 'Successfully logged out.'], 204);
     })->middleware(['auth:sanctum']);
-
-    // Route::get('forgot-password', function () {
-    //     return view('auth.passwords.email');
-    // })->middleware('guest')->name('password.request');
 
     Route::post('forgot-pwd', function (Request $request) {
         $request->validate(['email' => 'required|email']);
@@ -261,6 +272,57 @@ Route::prefix('auth')->name('auth.')->group(function () {
         return $request->user();
     });
 });
+
+
+Route::get('partners', function (Request $request) {
+    try {
+      $partner = User::role('Partner')->get();
+      return $partner->toArray();
+
+    } catch (\Throwable $th) {
+        return response()->json(['message' => 'Failed to get Partners.'], 204);
+    }
+    
+ });
+
+ Route::get('total-direct-sales', function (Request $request) {
+    $user = auth()->user();
+
+    try {
+      $investment = Investments::where('od_member', $user->username)->select('id', 'od_member', 'total_direct_sales')->get();
+      
+      return $investment->toArray();
+
+    } catch (\Throwable $th) {
+        return response()->json(['message' => 'Failed to get Partners.'], 204);
+    }
+    
+ })->middleware(['auth:sanctum']);
+
+ Route::get('total-empire-sales', function (Request $request) {
+    $user = auth()->user();
+
+    try {
+      $investment = Investments::where('od_partner', $user->username)->select('id', 'od_partner', 'total_empire_sales')->get();
+      
+      return $investment->toArray();
+
+    } catch (\Throwable $th) {
+        return response()->json(['message' => 'Failed to get Partners.'], 204);
+    }
+    
+ })->middleware(['auth:sanctum']);
+
+ Route::get('partners', function (Request $request) {
+    try {
+      $partner = User::role('Partner')->get();
+      return $partner->toArray();
+
+    } catch (\Throwable $th) {
+        return response()->json(['message' => 'Failed to get Partners.'], 204);
+    }
+    
+ });
 
 Route::get('/email/verify/{id}/{hash}', function (Request $request) {
     $params = $request->route()->parameters();

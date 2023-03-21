@@ -59,10 +59,7 @@
                                 <strong><label for="role" class="form-label">Select Role:</label></strong>
                                 <select class="form-select" id="role" >
                                     <option selected>Open this select menu</option>
-                                    @foreach ($roles as $r)
-                                    <option value="{{$r->name}}">{{$r->name}}</option>
-                                    @endforeach
-
+                                    <option value="Partner">Partner</option>
                                     {{-- <option value="1">One</option>
                                     <option value="2">Two</option>
                                     <option value="3">Three</option> --}}
@@ -367,13 +364,13 @@
 
 
         <div class="card-datatable table-responsive p-2">
-            {{-- <div class="pull-right">
+            <div class="pull-right">
                 @can('user-create')
                 <button type="button" class="btn btn-outline-primary mb-2" data-bs-toggle="modal" data-bs-target="#addUserModel">
                     Create New User
                 </button>
                 @endcan
-            </div> --}}
+            </div>
           <table id="user_table" class="invoice-list-table table">
             <thead>
                 <tr>
@@ -384,8 +381,10 @@
                     {{-- <th>Phone No</th> --}}
                     {{-- <th>Identity Card</th> --}}
                     <th>Email Verified</th>
+                   
                     <th>Approved Status</th>
                     {{-- <th>Referrel URL</th> --}}
+                    <th>Role</th>
                     <th>Registered Date</th>
                     <th width="">Action</th>
                 </tr>
@@ -417,10 +416,12 @@
                        {data: 'name', name: 'name'},
                        {data: 'username', name: 'username'},
                        {data: 'email', name: 'email'},
+                       
                     //    {data: 'phone_no', name: 'phone_no'},
                     //    {data: 'identity_card', name: 'identity_card'},
                        {data: 'email_verified_at', name: 'email_verified_at'},
                        {data: 'verified_status', name: 'verified_status'},
+                       {data: 'user_role', name: 'user_role'},
                     //    {data: 'referrel_url', name: 'referrel_url'},
                        {data: 'created_at', name: 'created_at'},
                        {data: 'action', name: 'action', orderable: false, searchable: false},
@@ -516,6 +517,8 @@
                     a.click();
                     a.remove();
                     window.URL.revokeObjectURL(url);
+                },error: function (error){
+                    console.log(error)
                 }
                 });
 

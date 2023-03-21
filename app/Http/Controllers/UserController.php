@@ -41,7 +41,15 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $roles = Role::all();
-
+        $roleAll = Role::all()->pluck('name')->toArray();
+        
+        if(!in_array('Partner', $roleAll)){
+            Role::create(['name' => 'Partner']);
+        }
+        
+        if(!in_array('Member', $roleAll)){
+            Role::create(['name' => 'Member']);
+        }
         $from = Carbon::parse($request->get('filter_from'));
         $to_at = Carbon::parse( $request->get('filter_to'));
         $to = $to_at->format('Y-m-d 23:59:59');
@@ -72,6 +80,10 @@ class UserController extends Controller
                         // $$btn = $btn.'<a href="javascript:void(0)" class="btn btn-primary edit" id="btn-edit" data-id="{{$data->id}}" data-name="{{$data->name}}" value="{{$data->id}}" >Edit</a>';
                         return $btn;
                 })
+                ->addColumn('user_role', function($data){
+                    $getRole = $data->getRoleNames()->toArray();
+                    return $getRole[0] ?? null;
+                })
                 ->editColumn('created_at', function($data){ $formatedDate = Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)->format('Y-m-d H:i:s'); return $formatedDate; })
                 ->editColumn('phone_no', function($data){ $formatedDate = 'https://api.whatsapp.com/send/?phone='.$data->created_at;  return $formatedDate; })
                     ->editColumn('email_verified_at', function($data){
@@ -83,7 +95,7 @@ class UserController extends Controller
 
                             return $verified;
                         })
-                    ->rawColumns(['action'])
+                    ->rawColumns(['action', 'user_role'])
                 ->order(function ($data) {
                     $data->orderBy('created_at', 'desc');
                 })
@@ -111,14 +123,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // $this->validate($request, [
-        //     'name' => 'required',
-        //     'email' => 'required|email|unique:users,email',
-        //     'password' => 'required|same:confirm-password',
-        //     'roles' => 'required'
-        // ]);
-
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
@@ -132,15 +136,25 @@ class UserController extends Controller
 
         $input = $request->all();
 
-
-
         $input['password'] = FacadesHash::make($input['password']);
 
         $user = User::create($input);
+        if($user->id < 10){
+            $user->username = 'ODIC00000'.$user->id;
+            $user->referrel_url = 'https://onedreamproperty/ODIC00000'.$user->id;
+        }elseif($user->id < 100){
+            $user->username = 'ODIC0000'.$user->id;
+            $user->referrel_url = 'https://onedreamproperty/ODIC0000'.$user->id;
+        }elseif($user->id < 1000){
+            $user->username = 'ODIC000'.$user->id;
+            $user->referrel_url = 'https://onedreamproperty/ODIC000'.$user->id;
+        }else{
+            $user->username = 'ODIC00'.$user->id;
+            $user->referrel_url = 'https://onedreamproperty/ODIC00'.$user->id;
+        }
+        $user->verified_status = 'Approved';
+        $user->save();
         $user->assignRole($request->input('roles'));
-
-        // return redirect()->route('users.index')
-        //                 ->with('success','User created successfully');
 
         return response()->json(['success' => 'User created successfully']);
     }
@@ -223,6 +237,7 @@ class UserController extends Controller
     }
     public function export(Request $request)
     {
+        // $export = new UserExport($request->all());
         return Excel::download(new UserExport($request->all()), 'visitors-list.xlsx');
     }
 

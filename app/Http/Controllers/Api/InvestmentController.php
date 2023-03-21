@@ -146,10 +146,12 @@ class InvestmentController extends Controller
             return response()->json($message, 400);
         }
 
+        
+       
         try {
             $investment = new Investments();
             $slot = $request->amount / 1000;
-            $investment->username = $request->username;
+            $investment->username = strtoupper($request->username);
             $investment->amount = $request->amount;
             if($request->amount < 10000 ){
                 $roi_amount =  $request->amount * 25 / 100;
@@ -159,6 +161,7 @@ class InvestmentController extends Controller
                 $roi_amount =  $request->amount * 27 / 100;
                 $investment->roi = 27;
                 $investment->roi_amount = $roi_amount;
+                
             }elseif($request->amount >= 30000){
                 $roi_amount =  $request->amount * 30 / 100;
                 $investment->roi = 30;
@@ -248,8 +251,18 @@ class InvestmentController extends Controller
             $date = Carbon::parse($effectiveDate);
 
             if($investProgress->name == 'Pending'){
+                $total_direct_sales = $investment->amount * 0.02; //od member
+                $total_empire_sales = $investment->amount * 0.01; //od partner
                 $investProgress->name = $request->status;
                 $investment->dividen_date = $date;
+                $user = User::where('username', strtoupper($investment->username))->first();
+                $investment->od_partner = $user->od_partner;
+                $investment->od_member = $user->od_member;
+                $investment->total_direct_sales = $total_direct_sales;
+                $investment->total_empire_sales = $total_empire_sales;
+                if($user->getRoleNames() != 'Admin' || $user->getRoleNames() != 'Partner' || $user->getRoleNames() != 'Member' && $investment->amount >= 10000){
+                    $user->assignRole('Member');
+                }
                 $investment->save();
                 $investProgress->save();
 
