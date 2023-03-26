@@ -276,7 +276,8 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
 Route::get('partners', function (Request $request) {
     try {
-      $partner = User::role('Partner')->get();
+    //  $partner = User::role('Partner')->get();
+        $partner = User::role('Partner')->select('username','od_partner')->get();
       return $partner->toArray();
 
     } catch (\Throwable $th) {
@@ -313,16 +314,7 @@ Route::get('partners', function (Request $request) {
     
  })->middleware(['auth:sanctum']);
 
- Route::get('partners', function (Request $request) {
-    try {
-      $partner = User::role('Partner')->get();
-      return $partner->toArray();
 
-    } catch (\Throwable $th) {
-        return response()->json(['message' => 'Failed to get Partners.'], 204);
-    }
-    
- });
 
 Route::get('/email/verify/{id}/{hash}', function (Request $request) {
     $params = $request->route()->parameters();
@@ -349,3 +341,7 @@ Route::post('investments', [InvestmentController::class, 'store'])->middleware('
 Route::get('investments/{username}', [InvestmentController::class, 'investmentIndex'])->middleware('auth:sanctum')->name('investment.investmentIndex');
 Route::post('withdraw/{investment}', [InvestmentController::class, 'withdrawInvestment'])->middleware('auth:sanctum')->name('investment.investmentWithdraw');
 Route::get('username/{username}', [InvestmentController::class, 'getUserByUsername'])->middleware('auth:sanctum')->name('investment.getUsername');
+
+
+
+Route::get('partner/{username}', [UserProfileController::class, 'getPartnerByUsername']);

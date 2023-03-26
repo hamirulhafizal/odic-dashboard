@@ -103,6 +103,10 @@ class UserProfileController extends Controller
                 $profile->city =  $request->city ? $request->city : $profile->city;
                 $profile->state =  $request->state ? $request->state : $profile->state;
                 $profile->postcode =  $request->postcode ? $request->postcode : $profile->postcode;
+                
+                $profile->od_member =  $request->od_member ? $request->od_member : $profile->od_member;
+                $profile->od_partner =  $request->od_partner ? $request->od_partner : $profile->od_partner;
+                
                 $profile->save();
             }
             return response()->json([$profile], 201);
@@ -122,4 +126,17 @@ class UserProfileController extends Controller
     {
         //
     }
+    
+    
+    public function getPartnerByUsername($username)
+    {
+        try {
+            $data = User::where('username', $username)->select('od_partner')->get();
+            return response()->json($data, 201);
+        } catch (\Throwable $th) {
+            throw $th;
+            return response()->json('Failed to get User data!', 401);
+        }
+    }
+    
 }
