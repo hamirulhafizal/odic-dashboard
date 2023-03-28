@@ -105,6 +105,7 @@ class InvestmentController extends Controller
             $data = User::where('username', $username)->get();
             $first = User::where('username', $username)->first();
             $role = $first->getRoleNames();
+            
             $data[0]->role = $role[0];
 
             return response()->json($data, 201);

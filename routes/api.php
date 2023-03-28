@@ -76,6 +76,37 @@ Route::prefix('auth')->name('auth.')->group(function () {
                 $tokenName = $user->email . '-' . $request->header('User-Agent');
                 $tokenObject = $user->createToken($tokenName);
 
+                $role = $user->getRoleNames();
+                
+         
+                
+             /*   if(!$role){
+                       
+                $user->role = 'Normal';
+                
+                    dd( $user);
+                } else{
+                    $user->role = $role[0];
+                }*/
+                
+                
+                
+                
+                if (!$user->hasRole('Partner') && !$user->hasRole('Member')) {
+                    // If not, assign the normal role
+                    $normalRole = Role::where('name', 'Normal')->first();
+                    $user->assignRole($normalRole);
+                       $user->role = $role[0];
+                } else {
+                    
+                 
+                    $user->role = $role[0]; 
+
+                }
+                
+           
+                
+            
                 return response()->json(['token' => $tokenObject->plainTextToken] + $user->toArray());
             }else{
                 return response()->json(['error'=>'Login details are not valid']);
