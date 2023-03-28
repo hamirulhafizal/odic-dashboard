@@ -100,6 +100,9 @@ Route::prefix('auth')->name('auth.')->group(function () {
             Role::create(['name' => 'Member']);
         }
 
+        if(!in_array('Normal', $roles)){
+            Role::create(['name' => 'Normal']);
+        }
         try {
             $validator = Validator::make($request->all(), [
                 'email' => 'required|email|unique:users,email',
@@ -122,7 +125,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             ];
 
             $user = User::create($input);
-            $user->sendEmailVerificationNotification();
+            // $user->sendEmailVerificationNotification();
 
 
             if($user->id < 10){

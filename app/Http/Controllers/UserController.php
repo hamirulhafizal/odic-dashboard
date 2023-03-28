@@ -50,6 +50,10 @@ class UserController extends Controller
         if(!in_array('Member', $roleAll)){
             Role::create(['name' => 'Member']);
         }
+
+        if(!in_array('Normal', $roleAll)){
+            Role::create(['name' => 'Normal']);
+        }
         $from = Carbon::parse($request->get('filter_from'));
         $to_at = Carbon::parse( $request->get('filter_to'));
         $to = $to_at->format('Y-m-d 23:59:59');
