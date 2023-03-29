@@ -265,13 +265,12 @@ class InvestmentController extends Controller
                 $investment->od_member = $user->od_member;
                 $investment->total_direct_sales = $total_direct_sales;
                 $investment->total_empire_sales = $total_empire_sales;
-                if(($user->getRoleNames() != 'Admin' || $user->getRoleNames() != 'Partner' || $user->getRoleNames() != 'Member') && $investment->amount >= 10000){
+                $role = $user->getRoleNames();
+                if($role[0] == 'Normal' && $investment->amount >= 10000){
+                    $user->removeRole($role[0]);                   
                     $user->assignRole('Member');
                 }
-
-                if(($user->getRoleNames() != 'Admin' || $user->getRoleNames() != 'Partner' || $user->getRoleNames() != 'Member') && $investment->amount < 10000){
-                    $user->assignRole('Normal');
-                }
+              
                 $investment->save();
                 $investProgress->save();
 

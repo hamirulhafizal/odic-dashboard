@@ -66,6 +66,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             }
 
             $user = User::firstWhere(['email' => $request->email]);
+            
             if (! $user->hasVerifiedEmail()) {
                 $user->sendEmailVerificationNotification();
                 return response()->json(["msg" => "Email not yet verification! Email verification link sent on your email address."]);
@@ -75,24 +76,10 @@ Route::prefix('auth')->name('auth.')->group(function () {
             if (Auth::attempt($credentials)) {
                 $tokenName = $user->email . '-' . $request->header('User-Agent');
                 $tokenObject = $user->createToken($tokenName);
-
+                dd($user); 
                 $role = $user->getRoleNames();
-                
-         
-                
-             /*   if(!$role){
-                       
-                $user->role = 'Normal';
-                
-                    dd( $user);
-                } else{
-                    $user->role = $role[0];
-                }*/
-                
-                
-                
-                
-                if (!$user->hasRole('Partner') && !$user->hasRole('Member')) {
+                        
+                if (!$user->hasRole('Admin') || !$user->hasRole('Partner') && !$user->hasRole('Member')) {
                     // If not, assign the normal role
                     $normalRole = Role::where('name', 'Normal')->first();
                     $user->assignRole($normalRole);
@@ -174,7 +161,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             }
 
             $user->verified_status = 'Pending';
-
+            $user->assignRole('Normal');
             $user->save();
             $user->assignRole($request->input('roles'));
             $tokenName = $user->email . '-' . $request->header('User-Agent');
