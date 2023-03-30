@@ -37,7 +37,8 @@ class User extends Authenticatable
         'verified_status',
         'referrel_url',
         'od_partner',
-        'od_member'
+        'od_member',
+        'team_member'
     ];
 
     /**

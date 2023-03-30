@@ -163,7 +163,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             $user->verified_status = 'Pending';
             $user->assignRole('Normal');
             $user->save();
-            $user->assignRole($request->input('roles'));
+            // $user->assignRole($request->input('roles'));
             $tokenName = $user->email . '-' . $request->header('User-Agent');
             $tokenObject = $user->createToken($tokenName);
 

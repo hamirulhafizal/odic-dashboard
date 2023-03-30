@@ -60,11 +60,7 @@
                                 <select class="form-select" id="role" >
                                     <option selected>Open this select menu</option>
                                     <option value="Partner">Partner</option>
-                                    {{-- <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option> --}}
                                 </select>
-                                {{-- <input class="form-control" type="role"  name="role"  id="role" required> --}}
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-12">
@@ -73,7 +69,12 @@
                                 <input class="form-control" type="password" name="password" id="password" required>
                             </div>
                         </div>
-
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="form-group">
+                                <strong> <label for="name" class="form-label">Team Member Name:</label></strong>
+                                <input class="form-control" type="text" name="team_member" id="team_member" required>
+                            </div>
+                        </div>
                     </div>
                     {{-- {!! Form::close() !!} --}}
                 </form>
@@ -558,7 +559,8 @@
             var name = $("#name").val();
             var email = $("#email").val();
             var password = $("#password").val();
-            var role =  $("#role").val();;
+            var role =  $("#role").val();
+            var team_member =  $("#team_member").val();
             $("#btn-save").html('Please Wait...');
             $("#btn-save"). attr("disabled", true);
 
@@ -584,6 +586,7 @@
                         password:password,
                         "confirm-password":password,
                         roles:role,
+                        team_member:team_member,
                     },
                     dataType: 'json',
                     success: function(res){

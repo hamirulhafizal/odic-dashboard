@@ -86,7 +86,13 @@ class UserController extends Controller
                 })
                 ->addColumn('user_role', function($data){
                     $getRole = $data->getRoleNames()->toArray();
-                    return $getRole[0] ?? null;
+
+                    if(isset($getRole[1])){
+                        return $getRole[0] . ', ' .$getRole[1];
+                    }else{
+                        return $getRole[0] ?? null;
+                    }
+                    
                 })
                 ->editColumn('created_at', function($data){ $formatedDate = Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)->format('Y-m-d H:i:s'); return $formatedDate; })
                 ->editColumn('phone_no', function($data){ $formatedDate = 'https://api.whatsapp.com/send/?phone='.$data->created_at;  return $formatedDate; })
@@ -131,7 +137,8 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|same:confirm-password',
-            'roles' => 'required'
+            'roles' => 'required',
+            'team_member' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -156,9 +163,14 @@ class UserController extends Controller
             $user->username = 'ODIC00'.$user->id;
             $user->referrel_url = 'https://onedreamproperty/ODIC00'.$user->id;
         }
+        
+        $user->od_member = $user->username;
+        $user->od_partner = $user->username;
         $user->verified_status = 'Approved';
         $user->save();
+        
         $user->assignRole($request->input('roles'));
+        $user->assignRole('Member');
 
         return response()->json(['success' => 'User created successfully']);
     }
