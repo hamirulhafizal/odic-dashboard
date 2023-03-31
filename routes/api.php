@@ -67,16 +67,16 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
             $user = User::firstWhere(['email' => $request->email]);
             
-            if (! $user->hasVerifiedEmail()) {
-                $user->sendEmailVerificationNotification();
-                return response()->json(["msg" => "Email not yet verification! Email verification link sent on your email address."]);
-            }
+            // if (! $user->hasVerifiedEmail()) {
+            //     $user->sendEmailVerificationNotification();
+            //     return response()->json(["msg" => "Email not yet verification! Email verification link sent on your email address."]);
+            // }
 
             $credentials = $request->only('email', 'password');
             if (Auth::attempt($credentials)) {
                 $tokenName = $user->email . '-' . $request->header('User-Agent');
                 $tokenObject = $user->createToken($tokenName);
-                dd($user); 
+                // dd($user); 
                 $role = $user->getRoleNames();
                         
                 if (!$user->hasRole('Admin') || !$user->hasRole('Partner') && !$user->hasRole('Member')) {

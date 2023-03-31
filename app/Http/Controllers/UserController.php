@@ -165,7 +165,7 @@ class UserController extends Controller
         }
         
         $user->od_member = $user->username;
-        $user->od_partner = $user->username;
+        $user->od_partner = $input['team_member'];
         $user->verified_status = 'Approved';
         $user->save();
         

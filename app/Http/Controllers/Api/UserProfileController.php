@@ -106,7 +106,12 @@ class UserProfileController extends Controller
                 
                 $profile->od_member =  $request->od_member ? $request->od_member : $profile->od_member;
                 $profile->od_partner =  $request->od_partner ? $request->od_partner : $profile->od_partner;
-                
+                $role = $profile->getRoleNames();
+                if (isset($role[0])):
+                    $profile->role = $role[0];
+                else:
+                    $profile->role = null;
+                endif;
                 $profile->save();
             }
             return response()->json([$profile], 201);
