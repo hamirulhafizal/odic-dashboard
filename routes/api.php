@@ -325,7 +325,7 @@ Route::get('partners', function (Request $request) {
     $user = auth()->user();
 
     try {
-      $investment = Investments::where('od_partner', $user->username)->select('id', 'od_partner', 'total_empire_sales')->get();
+      $investment = Investments::where('od_partner', $user->od_partner)->select('id', 'od_partner', 'total_empire_sales')->get();
       
       return $investment->toArray();
 

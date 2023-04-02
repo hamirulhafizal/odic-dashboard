@@ -266,6 +266,8 @@ class InvestmentController extends Controller
                 $investment->total_direct_sales = $total_direct_sales;
                 $investment->total_empire_sales = $total_empire_sales;
                 $role = $user->getRoleNames();
+                
+                
                 if($role[0] == 'Normal' && $investment->amount >= 10000){
                     $user->removeRole($role[0]);                   
                     $user->assignRole('Member');
