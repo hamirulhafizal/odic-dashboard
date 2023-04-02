@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('phone_no')->unique()->nullable();
+            $table->string('phone_no')->nullable();
             $table->string('profile_image')->nullable();
             $table->string('bank_account')->nullable();
             $table->string('bank_name')->nullable();
@@ -29,7 +29,7 @@ class CreateUsersTable extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->integer('postcode')->nullable();
-            $table->string('fullname')->unique()->nullable();
+            $table->string('fullname')->nullable();
             $table->string('identity_card_no')->nullable();
             $table->string('verified_status')->nullable();;
             $table->string('referrel_url')->nullable();
