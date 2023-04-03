@@ -67,10 +67,10 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
             $user = User::firstWhere(['email' => $request->email]);
             
-            // if (! $user->hasVerifiedEmail()) {
-            //     $user->sendEmailVerificationNotification();
-            //     return response()->json(["msg" => "Email not yet verification! Email verification link sent on your email address."]);
-            // }
+            if (! $user->hasVerifiedEmail()) {
+                $user->sendEmailVerificationNotification();
+                return response()->json(["msg" => "Email not yet verification! Email verification link sent on your email address."]);
+            }
 
             $credentials = $request->only('email', 'password');
             if (Auth::attempt($credentials)) {
@@ -143,7 +143,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             ];
 
             $user = User::create($input);
-            // $user->sendEmailVerificationNotification();
+            $user->sendEmailVerificationNotification();
 
 
             if($user->id < 10){
