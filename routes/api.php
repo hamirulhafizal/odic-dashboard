@@ -53,10 +53,12 @@ Route::prefix('auth')->name('auth.')->group(function () {
             ]);
 
             $investment = Investments::get();
-
-            foreach($investment as $i){
-                $formatted_date = date('y-m-d h:i:s');
+            
+             foreach($investment as $i){
+                $formatted_date = date('Y-m-d H:i:s');
+                
                 if($i->dividen_date <= $formatted_date){
+                    
                     $investmentStatus = InvestmentStatus::find($i->id);
                     if($investmentStatus->name == 'Progress'){
                         $investmentStatus->name = 'Withdraw';
