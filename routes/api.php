@@ -368,3 +368,6 @@ Route::get('username/{username}', [InvestmentController::class, 'getUserByUserna
 
 
 Route::get('partner/{username}', [UserProfileController::class, 'getPartnerByUsername']);
+Route::get('status/{username}', [UserProfileController::class, 'getStatusRoleByUsername']);
+
+

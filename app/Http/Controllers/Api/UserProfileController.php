@@ -146,4 +146,24 @@ class UserProfileController extends Controller
         }
     }
     
+    public function getStatusByUsername(Request $request, $username)
+    {
+
+        try {
+            
+            $data = User::where('username', $username)->get();
+            $first = User::where('username', $username)->first();
+            $role = $first->getRoleNames();
+            
+            $data[0]->role = $role[0];
+            
+            $status = $data[0]->role;
+            
+            
+            return response()->json($status, 201);
+        } catch (\Throwable $th) {
+            throw $th;
+            return response()->json('Failed to get User data!', 401);
+        }
+    }
 }
