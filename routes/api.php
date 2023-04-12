@@ -150,20 +150,20 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
             if($user->id < 10){
                 $user->username = 'ODIC00000'.$user->id;
-                $user->referrel_url = 'https://onedreamproperty/ODIC00000'.$user->id;
+                $user->referrel_url = 'https://odic.com.my/ODIC00000'.$user->id;
             }elseif($user->id < 100){
                 $user->username = 'ODIC0000'.$user->id;
-                $user->referrel_url = 'https://onedreamproperty/ODIC0000'.$user->id;
+                $user->referrel_url = 'https://odic.com.my/ODIC0000'.$user->id;
             }elseif($user->id < 1000){
                 $user->username = 'ODIC000'.$user->id;
-                $user->referrel_url = 'https://onedreamproperty/ODIC000'.$user->id;
+                $user->referrel_url = 'https://odic.com.my/ODIC000'.$user->id;
             }else{
                 $user->username = 'ODIC00'.$user->id;
-                $user->referrel_url = 'https://onedreamproperty/ODIC00'.$user->id;
+                $user->referrel_url = 'https://odic.com.my/ODIC00'.$user->id;
             }
 
             $user->verified_status = 'Pending';
-            $user->assignRole('Normal');
+            $user->assignRole('Member');
             $user->save();
             // $user->assignRole($request->input('roles'));
             $tokenName = $user->email . '-' . $request->header('User-Agent');
