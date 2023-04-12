@@ -146,7 +146,7 @@ class UserProfileController extends Controller
         }
     }
     
-    public function getStatusByUsername(Request $request, $username)
+    public function getStatusRoleByUsername(Request $request, $username)
     {
 
         try {
