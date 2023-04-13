@@ -313,9 +313,19 @@ Route::get('partners', function (Request $request) {
     $user = auth()->user();
 
     try {
-      $investment = Investments::where('od_member', $user->username)->select('id', 'od_member', 'total_direct_sales')->get();
-      
-      return $investment->toArray();
+
+
+      $investments = Investments::where('od_member', $user->username)
+    ->select('id','username', 'od_member', 'amount', 'slot', 'roi', 'roi_amount', 'dividen_date', 'total_direct_sales')
+    ->get();
+
+    foreach ($investments as $investment) {
+        $investmentStatus = InvestmentStatus::find($investment->id);
+        $investment->status = $investmentStatus ? $investmentStatus->name : null;
+    }
+    
+    return $investments;
+
 
     } catch (\Throwable $th) {
         return response()->json(['message' => 'Failed to get Partners.'], 204);
