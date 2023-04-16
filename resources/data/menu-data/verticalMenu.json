@@ -1,22 +1,28 @@
 {
-  "menu": [
-
-    {
-        "url": "/users",
-        "name": "Users",
-        "badge": "",
-        "badgeClass": "",
-        "icon": "",
-        "slug": "users.index"
-      },
-      {
-        "url": "/investments",
-        "name": "Investment",
-        "badge": "",
-        "badgeClass": "",
-        "icon": "",
-        "slug": "investment.index"
-      }
-
-  ]
+    "menu": [
+        {
+            "url": "/users",
+            "name": "Users",
+            "badge": "",
+            "badgeClass": "",
+            "icon": "",
+            "slug": "users.index"
+        },
+        {
+            "url": "/investments",
+            "name": "Investment",
+            "badge": "",
+            "badgeClass": "",
+            "icon": "",
+            "slug": "investment.index"
+        },
+        {
+            "url": "/commisions",
+            "name": "Commision",
+            "badge": "",
+            "badgeClass": "",
+            "icon": "",
+            "slug": "commision.index"
+        }
+    ]
 }

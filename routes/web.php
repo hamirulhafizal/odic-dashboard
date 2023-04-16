@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\InvestmentController;
+use App\Http\Controllers\Api\CommisionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -24,6 +25,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
     Route::get('investments', [InvestmentController::class, 'index'])->name('investment.index');
+    Route::get('commisions', [CommisionController::class, 'index'])->name('commision.index');
     Route::put('investments/approval/{investment}', [InvestmentController::class, 'approval'])->name('investment.approval');
     Route::put('users/approved/{user}', [UserController::class, 'approved'])->name('users.approved');
 });
