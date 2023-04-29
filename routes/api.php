@@ -339,7 +339,7 @@ Route::get('partners', function (Request $request) {
     try {
 
       $investments = Investments::where('od_partner', $user->od_partner)
-      ->select('id','username', 'od_member', 'od_partner', 'amount', 'slot', 'roi', 'roi_amount', 'dividen_date', 'total_direct_sales')
+      ->select('id','username', 'od_member', 'od_partner', 'amount', 'slot', 'roi', 'roi_amount', 'dividen_date', 'total_empire_sales')
       ->get();
      
     foreach ($investments as $investment) {

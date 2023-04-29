@@ -15,6 +15,14 @@
             "badgeClass": "",
             "icon": "",
             "slug": "investment.index"
+        },
+        {
+            "url": "/commisions",
+            "name": "Commisions",
+            "badge": "",
+            "badgeClass": "",
+            "icon": "",
+            "slug": "commision.index"
         }
     ]
 }

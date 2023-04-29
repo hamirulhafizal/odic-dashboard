@@ -17,6 +17,7 @@ use App\Exports\UserExport;
 use Yajra\DataTables\DataTables;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class UserController extends Controller
 {
@@ -171,6 +172,8 @@ class UserController extends Controller
         
         $user->assignRole($request->input('roles'));
         $user->assignRole('Member');
+        
+        $user->sendEmailVerificationNotification();
 
         return response()->json(['success' => 'User created successfully']);
     }
