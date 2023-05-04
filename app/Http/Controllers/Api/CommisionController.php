@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exports\CommisionExport;
 use App\Exports\InvestmentExport;
 use App\Http\Controllers\Controller;
 use App\Models\Investments;
@@ -14,6 +15,7 @@ use Yajra\DataTables\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CommisionController extends Controller
 {
@@ -24,64 +26,42 @@ class CommisionController extends Controller
      */
     public function index(Request $request)
     {
-        $from = Carbon::parse($request->get('filter_from'));
-        $to_at = Carbon::parse( $request->get('filter_to'));
-        $to = $to_at->format('Y-m-d 23:59:59');
-        $investment = Investments::get();
+        $start_date = '2024-05-01';
+        $end_date = '2024-05-31';
+        $sql = 'SELECT username, sum(roi_amount) AS total_roi_amount, sum(amount) AS total_amount FROM investments WHERE dividen_date BETWEEN ? AND ? GROUP BY username';
+        $data = DB::select($sql, [$start_date, $end_date]);
 
-        foreach($investment as $i){
-            $date = date(today());
+        return view('commision.index', compact('data'));
+    }
 
-            $formatted_date = date('Y-m-d H:i:s');
-            // dump($i->dividen_date, $date->format('Y-m-d H:i:s'));
-            if($i->dividen_date <= $formatted_date){
-                $investmentStatus = InvestmentStatus::find($i->id);
-                if($investmentStatus->name == 'Progress'){
-                    $investmentStatus->name = 'Withdraw';
-                    $investmentStatus->save();
-                }
-
-            }
+    public function getByUsername($username)
+    {  
+        $start_date = '2024-05-01';
+        $end_date = '2024-05-31';
+        $sql = 'SELECT * FROM investments WHERE dividen_date BETWEEN ? AND ? AND username = ?';
+        $data = DB::select($sql, [$start_date, $end_date, $username]);
+        $total = 0;
+        foreach($data as $d){
+            $total += $d->total_direct_sales;
         }
-        // $date_string = "{$from->format('Y-m-d')},{$to->format('Y-m-d')}";
-        if ($request->ajax()) {
-            $data = Investments::join('investment_status', 'investment_status.investment_id', '=' ,'investments.id')
-            ->select('investments.*', 'investment_status.name as status')
-            ->get();
+  
+        return view('commision.all', compact('data', 'total', 'username'));
+    }
 
-            if(!empty($request->filter_from)){
-                $data->whereBetween('created_at', array($from, $to))
-                ->get();
-            }
-
-            // dd();
-            return DataTables::of($data)
-                    ->addIndexColumn()
-                    ->addColumn('action', function($data){
-                        $user = auth()->user();
-
-                        $btn = '<a href="javascript:void(0)" id="show" class="show btn btn-primary btn-sm" data-id="'.$data->id.'" data-amount="'.$data->amount.'" data-roi="'.$data->roi.'" data-slot="'.$data->slot.'" data-roi_amount="'.$data->roi_amount.'" data-status="'.$data->status.'" data-receipt="'.$data->receipt.'" data-username="'.$data->username.'" data-bs-toggle="modal" data-bs-target="#showUserModal">View & Approve</a>';
-                        // if ($user->can('user-edit')) {
-                        //     $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-warning btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-email="'.$data->email.'" data-role="'.preg_replace('/[^A-Za-z0-9\-]/', '', $data->getRoleNames()).'" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</a>';
-                        // }
-                        // if ($user->can('user-delete')) {
-                        //     $btn = $btn.'<a href="javascript:void(0)" class="delete btn btn-danger btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</a>';
-                        // }
-
-                        // $$btn = $btn.'<a href="javascript:void(0)" class="btn btn-primary edit" id="btn-edit" data-id="{{$data->id}}" data-name="{{$data->name}}" value="{{$data->id}}" >Edit</a>';
-                        return $btn;
-                })
-                ->editColumn('created_at', function($data){ $formatedDate = Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)->format('Y-m-d H:i:s'); return $formatedDate; })
-                ->editColumn('amount', function($data){ $formatedDate = number_format($data->amount); return $formatedDate; })
-                ->editColumn('roi_amount', function($data){ $formatedDate = number_format($data->roi_amount); return $formatedDate; })
-                ->rawColumns(['action'])
-                // ->order(function ($data) {
-                //     $data->orderBy('created_at', 'desc');
-                // })
-                ->make(true);
+    public function updateWithdrawStatus($username)
+    {  
+        $start_date = '2024-05-01';
+        $end_date = '2024-05-31';
+        $sql = 'SELECT * FROM investments WHERE dividen_date BETWEEN ? AND ? AND username = ?';
+        $data = DB::select($sql, [$start_date, $end_date, $username]);
+ 
+        foreach($data as $d){
+            $investment = Investments::find($d->id);
+            $investment->status = 'Withdraw';
+            $investment->save();
         }
-
-        return view('commision.index');
+  
+        return back();
     }
 
     public function investmentIndex($username)
@@ -309,11 +289,11 @@ class CommisionController extends Controller
 
     public function export(Request $request)
     {
-        return Excel::download(new InvestmentExport($request->all()), 'investment-list.xlsx');
+        return Excel::download(new CommisionExport($request->all()), 'commision-list.xlsx');
     }
 
     public function exportPDF(Request $request)
     {
-        return Excel::download(new InvestmentExport($request->all()), 'investment-list.pdf');
+        return Excel::download(new CommisionExport($request->all()), 'commision-list.pdf');
     }
 }

@@ -34,8 +34,9 @@
         <div class="row p-2">
             <div class="col">
                 <div class="float-end d-inline-flex justify-content-between align-bottom gap-04">
-                    {{-- <button name="export" id="export" type="button" name="export" id="export"  class="btn btn-outline-danger ml-2">Excel</button>
-                    <button name="export" id="exportpdf" type="button" name="export" id="exportpdf"  class="btn btn-outline-danger">PDF</button> --}}
+                    <button name="export" id="export" type="button" name="export" id="export"  class="btn btn-outline-danger ml-2">Excel</button>
+                    <button name="export" id="exportpdf" type="button" name="export" id="exportpdf"  class="btn btn-outline-danger">PDF</button>
+                    <input name="username" id="username" value={{$username}} hidden>
                 </div>
             </div>
         </div>
@@ -44,19 +45,38 @@
           <table id="investment_table" class="invoice-list-table table">
             <thead>
                 <tr>
+                    <th>Slot ID</th>
                     <th>Username</th>
-                    <th>Total Roi Amount(RM)</th>
+                    <th>Status</th>
+                    <th>2%</th>
                 </tr>
+                
             </thead>
             <tbody>
                 @foreach($data as $investment)
                 <tr>
-                    <td><a href="{{url('commisions', ['username' => $investment->username])}}">{{ $investment->username }}</a></td>
-                    <td>{{ number_format($investment->total_amount) }}</td>
-                    <td>{{ number_format($investment->total_roi_amount) }}</td>
+                    <td>{{ $investment->id }}</td>
+                    <td>{{ $investment->username }}</td>
+                    @if($investment->status == 'Withdraw')
+                      <td><span class="badge bg-primary">{{ $investment->status}}</span></td>
+                    @elseif($investment->status == 'Pending')  
+                      <td><span class="badge bg-info">{{ $investment->status}}</span></td>
+                    @elseif($investment->status == 'Primary') 
+                      <td><span class="badge bg-warning">{{ $investment->status}}</span></td>
+                    @endif
+                    <td>{{ number_format($investment->total_direct_sales) }}</td>
                 </tr>
                 @endforeach
             </tbody>
+            <tfoot>
+              <tr>
+                <th></th>
+                <th><a href="{{url('commisions/approval', ['username' => $investment->username])}}"" type="button" class="btn btn-success rounded">Withdraw</a></th>
+                {{-- <th><button type="button" onclick="acceptWithdraw({{ $investment->id }})" class="btn btn-success rounded">Withdraw</button></th> --}}
+                <th>Total</th>
+                <th>RM {{number_format($total)}}</th>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>
@@ -66,15 +86,12 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $('#export').click(function(){
-            var filter_from = $('#filter_from').val();
-            var filter_to = $('#filter_to').val();
-
+            var username = $('#username').val();
             $.ajax({
-            url: "{{ route('export.investment-export') }}",
+            url: "{{ route('export.commision-export') }}",
             method: 'GET',
             data:{
-                filter_from:filter_from,
-                filter_to: filter_to,
+              username: username
             },
             xhrFields: {
                 responseType: 'blob'
@@ -83,7 +100,7 @@
                 var a = document.createElement('a');
                 var url = window.URL.createObjectURL(data);
                 a.href = url;
-                a.download = 'Investment-list.xlsx';
+                a.download = 'Commision-list.xlsx';
                 document.body.append(a);
                 a.click();
                 a.remove();
@@ -93,15 +110,13 @@
         });
 
         $('#exportpdf').click(function(){
-            var filter_from = $('#filter_from').val();
-            var filter_to = $('#filter_to').val();
-
+            var username = $('#username').val();
+            console.log(username)
             $.ajax({
-            url: "{{ route('exportpdf.investment-exportpdf') }}",
+            url: "{{ route('exportpdf.commision-exportpdf') }}",
             method: 'GET',
             data:{
-                filter_from:filter_from,
-                filter_to: filter_to,
+              username: username
             },
             xhrFields: {
                 responseType: 'blob'
@@ -110,7 +125,7 @@
                 var a = document.createElement('a');
                 var url = window.URL.createObjectURL(data);
                 a.href = url;
-                a.download = 'investment-list.pdf';
+                a.download = 'Commision-list.pdf';
                 document.body.append(a);
                 a.click();
                 a.remove();
@@ -118,7 +133,14 @@
             }
             });
         });
+       
     });
+</script>
+<script>
+   function acceptWithdraw(username){
+          alert(username)
+   }
+
 </script>
 
 @endsection
