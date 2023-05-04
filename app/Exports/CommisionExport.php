@@ -22,8 +22,8 @@ class CommisionExport implements FromView
 
    public function view(): View
    {
-        $start_date = '2024-05-01';
-        $end_date = '2024-05-31';
+        $start_date = date('Y-m-01');
+        $end_date = date('Y-m-t');
         $sql = 'SELECT * FROM investments WHERE dividen_date BETWEEN ? AND ? AND username = ?';
         $data = DB::select($sql, [$start_date, $end_date, $this->visitor["username"]]);
         $total = 0;
