@@ -47,7 +47,7 @@
                 <tr>
                     <th>Slot ID</th>
                     <th>Username</th>
-                    <th>Status</th>
+                    <th>Transfer</th>
                     <th>2%</th>
                 </tr>
                 
@@ -57,12 +57,12 @@
                 <tr>
                     <td>{{ $investment->id }}</td>
                     <td>{{ $investment->username }}</td>
-                    @if($investment->status == 'Withdraw')
-                      <td><span class="badge bg-primary">{{ $investment->status}}</span></td>
+                    @if($investment->commision == 'Yes')
+                      <td><span class="badge bg-primary">{{ $investment->commision}}</span></td>
                     @elseif($investment->status == 'Pending')  
-                      <td><span class="badge bg-info">{{ $investment->status}}</span></td>
+                      <td><span class="badge bg-info">{{ $investment->commision}}</span></td>
                     @elseif($investment->status == 'Primary') 
-                      <td><span class="badge bg-warning">{{ $investment->status}}</span></td>
+                      <td><span class="badge bg-warning">{{ $investment->commision}}</span></td>
                     @endif
                     <td>{{ number_format($investment->total_direct_sales) }}</td>
                 </tr>

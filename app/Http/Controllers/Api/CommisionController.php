@@ -57,7 +57,7 @@ class CommisionController extends Controller
  
         foreach($data as $d){
             $investment = Investments::find($d->id);
-            $investment->status = 'Withdraw';
+            $investment->commision = 'Yes';
             $investment->save();
         }
   
