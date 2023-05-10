@@ -26,10 +26,10 @@ class CommisionController extends Controller
      */
     public function index(Request $request)
     {
-        // $start_date = date('Y-m-01');
-        // $end_date = date('Y-m-t');
-        $start_date = '2024-05-01';
-        $end_date = '2024-05-31';
+        $start_date = date('Y-m-01');
+        $end_date = date('Y-m-t');
+        // $start_date = '2024-05-01';
+        // $end_date = '2024-05-31';
         $sql = 'SELECT username, sum(roi_amount) AS total_roi_amount, sum(amount) AS total_amount FROM investments WHERE status = "Progress" AND dividen_date BETWEEN ? AND ?   GROUP BY username';
         $data = DB::select($sql, [$start_date, $end_date]);
 
@@ -41,8 +41,10 @@ class CommisionController extends Controller
         $user = User::where('username', $username)->first();
         $roles = $user->getRoleNames();
         $role = $roles[0];
-        $start_date = '2024-05-01';
-        $end_date = '2024-05-31';
+        $start_date = date('Y-m-01');
+        $end_date = date('Y-m-t');
+        // $start_date = '2024-05-01';
+        // $end_date = '2024-05-31';
         $sql = 'SELECT * FROM investments WHERE dividen_date BETWEEN ? AND ? AND username = ? AND status = "Progress"';
         $data = DB::select($sql, [$start_date, $end_date, $username]);
         $total = 0;
