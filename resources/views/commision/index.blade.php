@@ -45,6 +45,7 @@
             <thead>
                 <tr>
                     <th>Username</th>
+                    <th>Total Amount(RM)</th>
                     <th>Total Roi Amount(RM)</th>
                 </tr>
             </thead>

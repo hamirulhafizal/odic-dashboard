@@ -49,6 +49,9 @@
                     <th>Username</th>
                     <th>Transfer</th>
                     <th>2%</th>
+                    @if($role == 'Partner')
+                    <th>1%</th>
+                    @endif
                 </tr>
                 
             </thead>
@@ -59,19 +62,23 @@
                     <td>{{ $investment->username }}</td>
                     @if($investment->commision == 'Yes')
                       <td><span class="badge bg-primary">{{ $investment->commision}}</span></td>
-                    @elseif($investment->status == 'Pending')  
-                      <td><span class="badge bg-info">{{ $investment->commision}}</span></td>
-                    @elseif($investment->status == 'Primary') 
+                    @else
                       <td><span class="badge bg-warning">{{ $investment->commision}}</span></td>
                     @endif
                     <td>{{ number_format($investment->total_direct_sales) }}</td>
+                    @if($role == 'Partner')
+                      <td>{{ number_format($investment->total_empire_sales) }}</td>
+                    @endif
                 </tr>
                 @endforeach
             </tbody>
             <tfoot>
               <tr>
+                @if($role == 'Partner')
                 <th></th>
-                <th><a href="{{url('commisions/approval', ['username' => $investment->username])}}"" type="button" class="btn btn-success rounded">Withdraw</a></th>
+                @endif
+                <th></th>
+                <th><a href="{{url('commisions/approval', ['username' => $investment->username])}}" type="button" class="btn btn-success rounded">Withdraw</a></th>
                 {{-- <th><button type="button" onclick="acceptWithdraw({{ $investment->id }})" class="btn btn-success rounded">Withdraw</button></th> --}}
                 <th>Total</th>
                 <th>RM {{number_format($total)}}</th>
