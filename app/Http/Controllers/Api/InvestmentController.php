@@ -56,25 +56,29 @@ class InvestmentController extends Controller
 
             // dd();
             return DataTables::of($data)
-                    ->addIndexColumn()
-                    ->addColumn('action', function($data){
-                        $user = auth()->user();
+                ->addIndexColumn()
+                ->addColumn('checkbox', function($data){
+                        $check = '<input class="form-check-input" type="checkbox" id="'.$data->id.'" name="'.$data->id.'" value="'.$data->id.'">';
+                        return $check;
+                })
+                ->addColumn('action', function($data){
+                    $user = auth()->user();
 
-                        $btn = '<a href="javascript:void(0)" id="show" class="show btn btn-primary btn-sm" data-id="'.$data->id.'" data-amount="'.$data->amount.'" data-roi="'.$data->roi.'" data-slot="'.$data->slot.'" data-roi_amount="'.$data->roi_amount.'" data-status="'.$data->status.'" data-receipt="'.$data->receipt.'" data-username="'.$data->username.'" data-bs-toggle="modal" data-bs-target="#showUserModal">View & Approve</a>';
-                        // if ($user->can('user-edit')) {
-                        //     $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-warning btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-email="'.$data->email.'" data-role="'.preg_replace('/[^A-Za-z0-9\-]/', '', $data->getRoleNames()).'" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</a>';
-                        // }
-                        // if ($user->can('user-delete')) {
-                        //     $btn = $btn.'<a href="javascript:void(0)" class="delete btn btn-danger btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</a>';
-                        // }
+                    $btn = '<a href="javascript:void(0)" id="show" class="show btn btn-primary btn-sm" data-id="'.$data->id.'" data-amount="'.$data->amount.'" data-roi="'.$data->roi.'" data-slot="'.$data->slot.'" data-roi_amount="'.$data->roi_amount.'" data-status="'.$data->status.'" data-receipt="'.$data->receipt.'" data-username="'.$data->username.'" data-bs-toggle="modal" data-bs-target="#showUserModal">View & Approve</a>';
+                    // if ($user->can('user-edit')) {
+                    //     $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-warning btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-email="'.$data->email.'" data-role="'.preg_replace('/[^A-Za-z0-9\-]/', '', $data->getRoleNames()).'" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</a>';
+                    // }
+                    // if ($user->can('user-delete')) {
+                        $btn = $btn.'<a href="javascript:void(0)" class="delete btn btn-danger btn-sm" data-id="'.$data->id.'" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</a>';
+                    // }
 
-                        // $$btn = $btn.'<a href="javascript:void(0)" class="btn btn-primary edit" id="btn-edit" data-id="{{$data->id}}" data-name="{{$data->name}}" value="{{$data->id}}" >Edit</a>';
-                        return $btn;
+                    // $$btn = $btn.'<a href="javascript:void(0)" class="btn btn-primary edit" id="btn-edit" data-id="{{$data->id}}" data-name="{{$data->name}}" value="{{$data->id}}" >Edit</a>';
+                    return $btn;
                 })
                 ->editColumn('created_at', function($data){ $formatedDate = Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)->format('Y-m-d H:i:s'); return $formatedDate; })
                 ->editColumn('amount', function($data){ $formatedDate = number_format($data->amount); return $formatedDate; })
                 ->editColumn('roi_amount', function($data){ $formatedDate = number_format($data->roi_amount); return $formatedDate; })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'checkbox'])
                 // ->order(function ($data) {
                 //     $data->orderBy('created_at', 'desc');
                 // })
@@ -151,8 +155,6 @@ class InvestmentController extends Controller
             return response()->json($message, 400);
         }
 
-        
-       
         try {
             $investment = new Investments();
             $slot = $request->amount / 1000;
@@ -266,8 +268,7 @@ class InvestmentController extends Controller
                 $investment->total_direct_sales = $total_direct_sales;
                 $investment->total_empire_sales = $total_empire_sales;
                 $role = $user->getRoleNames();
-                
-                
+                                
                 if($role[0] == 'Normal' && $investment->amount >= 10000){
                     $user->removeRole($role[0]);                   
                     $user->assignRole('Member');
@@ -304,7 +305,9 @@ class InvestmentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $investment = Investments::find($id);
+        $investment->delete();
+        return back();
     }
 
     public function export(Request $request)

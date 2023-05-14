@@ -25,6 +25,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
     Route::get('investments', [InvestmentController::class, 'index'])->name('investment.index');
+    Route::get('investments/{id}', [InvestmentController::class, 'destroy'])->name('investment.destroy');
     Route::get('commisions', [CommisionController::class, 'index'])->name('commision.index');
     Route::get('commisions/{username}', [CommisionController::class, 'getByUsername'])->name('commision.all');
     Route::get('commisions/approval/{username}', [CommisionController::class, 'updateWithdrawStatus'])->name('commision.status');

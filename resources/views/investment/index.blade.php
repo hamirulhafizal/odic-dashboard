@@ -239,7 +239,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                           <label class="form-label">Are you sure you want to delete user<strong> <label id="delete_user" class="form-label"></label></strong> ?</label>
+                           <label class="form-label">Are you sure you want to delete ?</label>
                         </div>
                     </div>
                 </div>
@@ -324,6 +324,7 @@
                    searching: true,
                    processing: true,
                    serverSide: true,
+                   className: 'select-checkbox',
                    ajax:{
                        type:"GET",
                        url:"{{ route('investment.index') }}",
@@ -621,11 +622,43 @@
         });
 
         $('body').on('click', '.delete', function () {
-            var name = $(this).data('name')
+            // var name = $(this).data('name')
             var id = $(this).data('id')
             $("#btn-delete"). attr("data-id", id);
 
-            document.getElementById('delete_user').innerHTML = name;
+            // document.getElementById('delete_user').innerHTML = name;
+        });
+        $('body').on('click', '#btn-delete', function () {
+            // var name = $(this).data('name')
+            var id = $(this).data('id')
+            // $("#btn-delete"). attr("data-id", id);
+
+            var url = "{{ route('investment.destroy', ['id' => ":id"]) }}";
+            url = url.replace(':id', id);
+            // console.log(id);
+            $.ajax({
+                type:"GET",
+                url: url,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id:id,
+                    status: 'Fail'
+                },
+                dataType: 'json',
+                success: function(data){
+                    setTimeout(() => {
+                        toastr.success(data.message, data.title);
+                        window.location.reload();
+                    },1500)
+                    $("#btn-save").html('Submit');
+                    $("#btn-save"). attr("disabled", false);
+                },
+                error: function(errors) {
+                    setTimeout(() => {
+                        toastr.error(errors.responseJSON.message, errors.responseJSON.title);
+                    },500)
+                }
+            });        
         });
 
         $('body').on('click', '#btn-edit', function (event) {

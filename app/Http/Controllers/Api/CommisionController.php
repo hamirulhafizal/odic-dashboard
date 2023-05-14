@@ -26,13 +26,18 @@ class CommisionController extends Controller
      */
     public function index(Request $request)
     {
-        $start_date = date('Y-m-01');
-        $end_date = date('Y-m-t');
-        // $start_date = '2024-05-01';
-        // $end_date = '2024-05-31';
-        $sql = 'SELECT username, sum(roi_amount) AS total_roi_amount, sum(amount) AS total_amount FROM investments WHERE status = "Progress" AND dividen_date BETWEEN ? AND ?   GROUP BY username';
-        $data = DB::select($sql, [$start_date, $end_date]);
-
+        $last_start_date = date('Y-m-01', strtotime('-1 month'));
+        $last_end_date = date('Y-m-t', strtotime('-1 month'));
+        $investments = Investments::all();
+        $data = collect([]);
+        foreach($investments as $investment){
+            if($investment->created_at >= $last_start_date && $investment->created_at <= $last_end_date){
+                $sql = 'SELECT username, sum(roi_amount) AS total_roi_amount, sum(amount) AS total_amount FROM investments WHERE status = "Progress" AND created_at BETWEEN ? AND ?   GROUP BY username';
+                $data = DB::select($sql, [$last_start_date, $last_end_date]);
+                // array_push($data, $invest);
+            }
+        }
+// dd($data);
         return view('commision.index', compact('data'));
     }
 
@@ -41,21 +46,26 @@ class CommisionController extends Controller
         $user = User::where('username', $username)->first();
         $roles = $user->getRoleNames();
         $role = $roles[0];
-        $start_date = date('Y-m-01');
-        $end_date = date('Y-m-t');
-        // $start_date = '2024-05-01';
-        // $end_date = '2024-05-31';
-        $sql = 'SELECT * FROM investments WHERE dividen_date BETWEEN ? AND ? AND username = ? AND status = "Progress"';
-        $data = DB::select($sql, [$start_date, $end_date, $username]);
-        $total = 0;
-        foreach($data as $d){
-            if($role == 'Partner'){
-                $total += $d->total_direct_sales + $d->total_empire_sales;
-            }else{
-                $total += $d->total_direct_sales;
-            }          
+        $last_start_date = date('Y-m-01', strtotime('-1 month'));
+        $last_end_date = date('Y-m-t', strtotime('-1 month'));
+        $investments = Investments::all();
+        foreach($investments as $investment){
+            if($investment->created_at >= $last_start_date && $investment->created_at <= $last_end_date){
+                $start_date = date('Y-m-01', strtotime('+1 month', strtotime($last_start_date)));
+                $end_date = date('Y-m-t', strtotime('+1 month', strtotime($last_end_date)));
+                $sql = 'SELECT * FROM investments WHERE created_at BETWEEN ? AND ? AND username = ? AND status = "Progress"';
+                $data = DB::select($sql, [$last_start_date, $last_end_date,  $username]);
+                $total = 0;
+                foreach($data as $d){
+                    if($role == 'Partner'){
+                        $total += $d->total_direct_sales + $d->total_empire_sales;
+                    }else{
+                        $total += $d->total_direct_sales;
+                    }          
+                }
+            }
         }
-  
+
         return view('commision.all', compact('data', 'total', 'username', 'role'));
     }
 
@@ -63,9 +73,19 @@ class CommisionController extends Controller
     {  
         $start_date = date('Y-m-01');
         $end_date = date('Y-m-t');
-        $sql = 'SELECT * FROM investments WHERE dividen_date BETWEEN ? AND ? AND username = ?';
-        $data = DB::select($sql, [$start_date, $end_date, $username]);
- 
+        $last_start_date = date('Y-m-01', strtotime('-1 month'));
+        $last_end_date = date('Y-m-t', strtotime('-1 month'));
+        $investments = Investments::all();
+        foreach($investments as $investment){
+            if($investment->created_at >= $last_start_date && $investment->created_at <= $last_end_date){
+                $start_date = date('Y-m-01', strtotime('+1 month', strtotime($last_start_date)));
+                $end_date = date('Y-m-t', strtotime('+1 month', strtotime($last_end_date)));
+                $sql = 'SELECT * FROM investments WHERE created_at BETWEEN ? AND ? AND username = ?';
+                $data = DB::select($sql, [$last_start_date, $last_end_date,  $username]);
+                
+            }
+        }
+
         foreach($data as $d){
             $investment = Investments::find($d->id);
             $investment->commision = 'Yes';
