@@ -30,14 +30,22 @@ class CommisionController extends Controller
         $last_end_date = date('Y-m-t', strtotime('-1 month'));
         $investments = Investments::all();
         $data = collect([]);
+                           
         foreach($investments as $investment){
-            if($investment->created_at >= $last_start_date && $investment->created_at <= $last_end_date){
-                $sql = 'SELECT username, sum(roi_amount) AS total_roi_amount, sum(amount) AS total_amount FROM investments WHERE status = "Progress" AND created_at BETWEEN ? AND ?   GROUP BY username';
+            
+             
+             $investmentStatus = InvestmentStatus::find($investment->id);
+            
+             if($investment->created_at >= $last_start_date && $investment->created_at <= $last_end_date && $investmentStatus->name == 'Progress'){
+
+                $sql = 'SELECT username, sum(roi_amount) AS total_roi_amount, sum(amount) AS total_amount FROM investments WHERE created_at BETWEEN ? AND ? GROUP BY username';
                 $data = DB::select($sql, [$last_start_date, $last_end_date]);
                 // array_push($data, $invest);
             }
         }
-// dd($data);
+        
+        //dd($data);
+
         return view('commision.index', compact('data'));
     }
 
@@ -50,10 +58,17 @@ class CommisionController extends Controller
         $last_end_date = date('Y-m-t', strtotime('-1 month'));
         $investments = Investments::all();
         foreach($investments as $investment){
-            if($investment->created_at >= $last_start_date && $investment->created_at <= $last_end_date){
+            
+            
+             
+             $investmentStatus = InvestmentStatus::find($investment->id);
+             
+
+            
+            if($investment->created_at >= $last_start_date && $investment->created_at <= $last_end_date && $investmentStatus->name == 'Progress' ){
                 $start_date = date('Y-m-01', strtotime('+1 month', strtotime($last_start_date)));
                 $end_date = date('Y-m-t', strtotime('+1 month', strtotime($last_end_date)));
-                $sql = 'SELECT * FROM investments WHERE created_at BETWEEN ? AND ? AND username = ? AND status = "Progress"';
+                $sql = 'SELECT * FROM investments WHERE created_at BETWEEN ? AND ? AND username = ?';
                 $data = DB::select($sql, [$last_start_date, $last_end_date,  $username]);
                 $total = 0;
                 foreach($data as $d){
