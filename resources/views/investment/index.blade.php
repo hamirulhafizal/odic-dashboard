@@ -206,6 +206,14 @@
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
+                            <strong><label for="edit_role" class="form-label"> Agreement:</label></strong>
+                            <div style="text-align: center; z-index: 1; position: relative;">
+                                <button class="btn btn-info" id="download_agreement"><i class="fa fa-download"></i> Download</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
                             <strong><label for="edit_role" class="form-label">Status:</label></strong><br>
                             {{-- <input class="form-control-plaintext badge-light-info" type="text"  name="status"  id="show_status"
                             style="padding-top:0px; position: relative; top: -6px" disabled> --}}
@@ -392,6 +400,32 @@
                fill_datatable();
            });
 
+           $('#download_agreement').click(function(){
+
+                var id = $(this).data('id')
+                $.ajax({
+                url: "{{ route('exportpdf.investment.agreement-pdf')}}",
+                method: 'GET',
+                data:{
+                    id_investment:id
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data) {
+                    var a = document.createElement('a');
+                    var url = window.URL.createObjectURL(data);
+                    a.href = url;
+                    a.download = 'investment-agreement.pdf';
+                    document.body.append(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                }
+                });
+
+            });
+
            $('#export').click(function(){
                 var filter_from = $('#filter_from').val();
                 var filter_to = $('#filter_to').val();
@@ -542,6 +576,7 @@
             var roi_amount =  addCommas(b_roi_amount)
 
             $("#btn-approve"). attr("data-id", id);
+            $("#download_agreement"). attr("data-id", id);
             $("#btn-reject"). attr("data-id", id);
             $('#show_username').val(username);
             $('#show_amount').val('RM '+amount);
@@ -658,7 +693,7 @@
                         toastr.error(errors.responseJSON.message, errors.responseJSON.title);
                     },500)
                 }
-            });        
+            });
         });
 
         $('body').on('click', '#btn-edit', function (event) {

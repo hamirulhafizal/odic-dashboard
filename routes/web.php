@@ -40,6 +40,7 @@ Route::prefix('export')->name('export.')->group(function () {
 });
 
 Route::prefix('exportpdf')->name('exportpdf.')->group(function () {
+    Route::get('investments/agreement-download', [InvestmentController::class, 'investmentAgreementDownload'])->name('investment.agreement-pdf');
     Route::get('users/export', [UserController::class, 'exportPDF'])->name('user-exportpdf');
     Route::get('investments/export', [InvestmentController::class, 'exportPDF'])->name('investment-exportpdf');
     Route::get('commisions/export', [CommisionController::class, 'exportPDF'])->name('commision-exportpdf');

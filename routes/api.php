@@ -53,12 +53,12 @@ Route::prefix('auth')->name('auth.')->group(function () {
             ]);
 
             $investment = Investments::get();
-            
+
              foreach($investment as $i){
                 $formatted_date = date('Y-m-d H:i:s');
-                
+
                 if($i->dividen_date <= $formatted_date){
-                    
+
                     $investmentStatus = InvestmentStatus::find($i->id);
                     if($investmentStatus->name == 'Progress'){
                         $investmentStatus->name = 'Withdraw';
@@ -68,7 +68,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             }
 
             $user = User::firstWhere(['email' => $request->email]);
-            
+
             if (! $user->hasVerifiedEmail()) {
                 $user->sendEmailVerificationNotification();
                 return response()->json(["msg" => "Email not yet verification! Email verification link sent on your email address."]);
@@ -78,24 +78,24 @@ Route::prefix('auth')->name('auth.')->group(function () {
             if (Auth::attempt($credentials)) {
                 $tokenName = $user->email . '-' . $request->header('User-Agent');
                 $tokenObject = $user->createToken($tokenName);
-                // dd($user); 
+                // dd($user);
                 $role = $user->getRoleNames();
-                        
+
                 if (!$user->hasRole('Admin') || !$user->hasRole('Partner') && !$user->hasRole('Member')) {
                     // If not, assign the normal role
                     $normalRole = Role::where('name', 'Normal')->first();
                     $user->assignRole($normalRole);
                        $user->role = $role[0];
                 } else {
-                    
-                 
-                    $user->role = $role[0]; 
+
+
+                    $user->role = $role[0];
 
                 }
-                
-           
-                
-            
+
+
+
+
                 return response()->json(['token' => $tokenObject->plainTextToken] + $user->toArray());
             }else{
                 return response()->json(['error'=>'Login details are not valid']);
@@ -111,11 +111,11 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
     Route::post('register', function (Request $request) {
         $roles = Role::all()->pluck('name')->toArray();
-        
+
         if(!in_array('Partner', $roles)){
             Role::create(['name' => 'Partner']);
         }
-        
+
         if(!in_array('Member', $roles)){
             Role::create(['name' => 'Member']);
         }
@@ -201,7 +201,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
             $tokenData = DB::table('password_resets')->where('email', $request->email)->first();
 
            // $forgetURL = 'https://odic.com.my/forget-password/'.$tokenData->token;
-        
+
             $forgetURL = "https://odic.com.my/forget-password/{$tokenData->token}?email={$request->email}";
 
             $project = [
@@ -306,7 +306,7 @@ Route::get('partners', function (Request $request) {
     } catch (\Throwable $th) {
         return response()->json(['message' => 'Failed to get Partners.'], 204);
     }
-    
+
  });
 
  Route::get('total-direct-sales', function (Request $request) {
@@ -323,14 +323,14 @@ Route::get('partners', function (Request $request) {
         $investmentStatus = InvestmentStatus::find($investment->id);
         $investment->status = $investmentStatus ? $investmentStatus->name : null;
     }
-    
+
     return $investments;
 
 
     } catch (\Throwable $th) {
         return response()->json(['message' => 'Failed to get Partners.'], 204);
     }
-    
+
  })->middleware(['auth:sanctum']);
 
  Route::get('total-empire-sales', function (Request $request) {
@@ -341,18 +341,18 @@ Route::get('partners', function (Request $request) {
       $investments = Investments::where('od_partner', $user->od_partner)
       ->select('id','username', 'od_member', 'od_partner', 'amount', 'slot', 'roi', 'roi_amount', 'dividen_date', 'total_empire_sales')
       ->get();
-     
+
     foreach ($investments as $investment) {
         $investmentStatus = InvestmentStatus::find($investment->id);
         $investment->status = $investmentStatus ? $investmentStatus->name : null;
     }
-    
+
     return $investments;
 
     } catch (\Throwable $th) {
         return response()->json(['message' => 'Failed to get Partners.'], 204);
     }
-    
+
  })->middleware(['auth:sanctum']);
 
 
@@ -378,7 +378,8 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 Route::post('user-profile/edit/{user}', [UserProfileController::class,'update'])->middleware('auth:sanctum')->name('profile.store');
-Route::post('investments', [InvestmentController::class, 'store'])->middleware('auth:sanctum')->name('investment.store');
+Route::post('investments', [InvestmentController::class, 'store'])->name('investment.store');
+Route::get('investments/agreement-download', [InvestmentController::class, 'investmentAgreementDownload'])->name('investment.store');
 Route::get('investments/{username}', [InvestmentController::class, 'investmentIndex'])->middleware('auth:sanctum')->name('investment.investmentIndex');
 Route::post('withdraw/{investment}', [InvestmentController::class, 'withdrawInvestment'])->middleware('auth:sanctum')->name('investment.investmentWithdraw');
 Route::get('username/{username}', [InvestmentController::class, 'getUserByUsername'])->middleware('auth:sanctum')->name('investment.getUsername');

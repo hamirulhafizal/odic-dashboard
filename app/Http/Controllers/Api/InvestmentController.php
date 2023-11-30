@@ -109,7 +109,7 @@ class InvestmentController extends Controller
             $data = User::where('username', $username)->get();
             $first = User::where('username', $username)->first();
             $role = $first->getRoleNames();
-            
+
             $data[0]->role = $role[0];
 
             return response()->json($data, 201);
@@ -168,7 +168,7 @@ class InvestmentController extends Controller
                 $roi_amount =  $request->amount * 27 / 100;
                 $investment->roi = 27;
                 $investment->roi_amount = $roi_amount;
-                
+
             }elseif($request->amount >= 30000){
                 $roi_amount =  $request->amount * 30 / 100;
                 $investment->roi = 30;
@@ -184,6 +184,16 @@ class InvestmentController extends Controller
                     $investment->receipt = $filename ? $filename : null;
                 }
             }
+
+            if($request->file('agreement')){
+                $file = $request->file('agreement');
+                if($investment->image != $file->getClientOriginalName()){
+                    $filename = date('YmdHi').$file->getClientOriginalName();
+                    $file-> move(public_path('investment/agreement'), $filename);
+                    $investment->agreement = $filename ? $filename : null;
+                }
+            }
+
             $investment->save();
             $investmentStatus = new InvestmentStatus();
             $investmentStatus->investment_id = $investment->id;
@@ -194,8 +204,33 @@ class InvestmentController extends Controller
             return response()->json($message);
             // return back()->with('success', 'Success! User created');
         } catch (\Throwable $th) {
+            dd($th);
             $message = array('message' => 'Failed to create Investment!', 'title' => 'Failed!');
             return response()->json($message);
+        }
+    }
+
+    public function investmentAgreementDownload(Request $request)
+    {
+        try {
+            $investment_id = $request->input('id_investment');
+
+            $data = Investments::where('id', $investment_id)->first();
+
+            //PDF file is stored under project/public/download/info.pdf
+            $file= public_path(). "/investment/agreement/".$data->agreement;
+
+            $headers = [
+                'Content-Type' => 'application/pdf',
+            ];
+
+            return response()->download($file, $data->agreement, $headers);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            // dd($th);
+            throw $th;
+            return response()->json('Failed to download agreement!', 401);
         }
     }
 
@@ -268,12 +303,12 @@ class InvestmentController extends Controller
                 $investment->total_direct_sales = $total_direct_sales;
                 $investment->total_empire_sales = $total_empire_sales;
                 $role = $user->getRoleNames();
-                                
+
                 if($role[0] == 'Normal' && $investment->amount >= 10000){
-                    $user->removeRole($role[0]);                   
+                    $user->removeRole($role[0]);
                     $user->assignRole('Member');
                 }
-              
+
                 $investment->save();
                 $investProgress->save();
 
