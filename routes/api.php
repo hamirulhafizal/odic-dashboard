@@ -378,7 +378,8 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 Route::post('user-profile/edit/{user}', [UserProfileController::class,'update'])->middleware('auth:sanctum')->name('profile.store');
-Route::post('investments', [InvestmentController::class, 'store'])->middleware('auth:sanctum')->name('investment.store');
+Route::post('investments', [InvestmentController::class, 'store'])->name('investment.store');
+Route::post('investments/agreement', [InvestmentController::class, 'investmentStoreAgreement'])->name('investment.investmentStoreAgreement');
 Route::get('investments/agreement-download', [InvestmentController::class, 'investmentAgreementDownload'])->middleware('auth:sanctum')->name('investment.store');
 Route::get('investments/{username}', [InvestmentController::class, 'investmentIndex'])->middleware('auth:sanctum')->name('investment.investmentIndex');
 Route::post('withdraw/{investment}', [InvestmentController::class, 'withdrawInvestment'])->middleware('auth:sanctum')->name('investment.investmentWithdraw');

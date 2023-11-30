@@ -12,6 +12,8 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Carbon;
 use Yajra\DataTables\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Helpers\Helper;
+
 
 use Illuminate\Http\Request;
 
@@ -34,13 +36,13 @@ class InvestmentController extends Controller
 
             $formatted_date = date('Y-m-d H:i:s');
             // dump($i->dividen_date, $date->format('Y-m-d H:i:s'));
-            if($i->dividen_date <= $formatted_date){
+            // dd(isset($i->dividen_date ) && $i->dividen_date <= $formatted_date);
+            if(isset($i->dividen_date ) && $i->dividen_date <= $formatted_date){
                 $investmentStatus = InvestmentStatus::find($i->id);
                 if($investmentStatus->name == 'Progress'){
                     $investmentStatus->name = 'Withdraw';
                     $investmentStatus->save();
                 }
-
             }
         }
         // $date_string = "{$from->format('Y-m-d')},{$to->format('Y-m-d')}";
@@ -64,7 +66,7 @@ class InvestmentController extends Controller
                 ->addColumn('action', function($data){
                     $user = auth()->user();
 
-                    $btn = '<a href="javascript:void(0)" id="show" class="show btn btn-primary btn-sm" data-id="'.$data->id.'" data-amount="'.$data->amount.'" data-roi="'.$data->roi.'" data-slot="'.$data->slot.'" data-roi_amount="'.$data->roi_amount.'" data-status="'.$data->status.'" data-receipt="'.$data->receipt.'" data-username="'.$data->username.'" data-bs-toggle="modal" data-bs-target="#showUserModal">View & Approve</a>';
+                    $btn = '<a href="javascript:void(0)" id="show" class="show btn btn-primary btn-sm" data-id="'.$data->id.'" data-hash_id="'.$data->hash_id.'" data-amount="'.$data->amount.'" data-roi="'.$data->roi.'" data-slot="'.$data->slot.'" data-roi_amount="'.$data->roi_amount.'" data-status="'.$data->status.'" data-receipt="'.$data->receipt.'" data-username="'.$data->username.'" data-bs-toggle="modal" data-bs-target="#showUserModal">View & Approve</a>';
                     // if ($user->can('user-edit')) {
                     //     $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-warning btn-sm" data-id="'.$data->id.'" data-name="'.$data->name.'" data-email="'.$data->email.'" data-role="'.preg_replace('/[^A-Za-z0-9\-]/', '', $data->getRoleNames()).'" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</a>';
                     // }
@@ -185,26 +187,20 @@ class InvestmentController extends Controller
                 }
             }
 
-            if($request->file('agreement')){
-                $file = $request->file('agreement');
-                if($investment->image != $file->getClientOriginalName()){
-                    $filename = date('YmdHi').$file->getClientOriginalName();
-                    $file-> move(public_path('investment/agreement'), $filename);
-                    $investment->agreement = $filename ? $filename : null;
-                }
-            }
-
+            $investment->save();
+            $hash_id = (string)$investment->id.''.helper::random_strings(13);
+            $investment->hash_id = $hash_id;
             $investment->save();
             $investmentStatus = new InvestmentStatus();
             $investmentStatus->investment_id = $investment->id;
             $investmentStatus->name = 'Pending';
             $investmentStatus->save();
 
-            $message = array('Investment_id'=> $investment->id, 'message' => 'Investment created successfully!', 'title' => 'Success!');
+            $message = array('Investment_id'=> $investment->id, 'Hash_id'=> $investment->hash_id, 'message' => 'Investment created successfully!', 'title' => 'Success!');
             return response()->json($message);
             // return back()->with('success', 'Success! User created');
         } catch (\Throwable $th) {
-            dd($th);
+
             $message = array('message' => 'Failed to create Investment!', 'title' => 'Failed!');
             return response()->json($message);
         }
@@ -213,22 +209,68 @@ class InvestmentController extends Controller
     public function investmentAgreementDownload(Request $request)
     {
         try {
-            $investment_id = $request->input('id_investment');
+            $hash_id = $request->input('hash_id');
 
-            $data = Investments::where('id', $investment_id)->first();
-
+            $data = Investments::where('hash_id', $hash_id)->first();
             //PDF file is stored under project/public/download/info.pdf
             $file= public_path(). "/investment/agreement/".$data->agreement;
 
             $headers = [
                 'Content-Type' => 'application/pdf',
             ];
-
             return response()->download($file, $data->agreement, $headers);
 
         } catch (\Throwable $th) {
             //throw $th;
             // dd($th);
+            throw $th;
+            return response()->json('Failed to download agreement!', 401);
+        }
+    }
+
+    public function investmentStoreAgreement(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'agreement' => 'required',
+            'hash_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $error = $validator->errors()->messages();
+            if(isset($error['agreement'][0])){
+                $message = array('message' => $error['agreement'][0], 'title' => 'Failed!');
+            }elseif(isset($error['hash_id'][0])){
+                $message = array('message' => $error['hash_id'][0], 'title' => 'Failed!');
+            }
+
+            return response()->json($message, 400);
+        }
+
+        try {
+            $hash_id = $request->input('hash_id');
+
+            $investment = Investments::where('hash_id', $hash_id)->first();
+
+            if(!$investment){
+                $message = array('message' => 'Investment does not not exist!', 'title' => 'Failed!');
+                return response()->json($message);
+            }
+
+            if($request->file('agreement')){
+                $file = $request->file('agreement');
+                if($investment->agreement != $investment->hash_id){
+                    $filename = date('YmdHi').$investment->hash_id.'.pdf';
+                    $file-> move(public_path('investment/agreement'), $filename);
+                    $investment->agreement = $filename ? $filename : null;
+                }
+            }
+            $investment->save();
+            $message = array('message' => 'Investment Agreement stored successfully!', 'title' => 'Success!');
+            return response()->json($message);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th);
             throw $th;
             return response()->json('Failed to download agreement!', 401);
         }

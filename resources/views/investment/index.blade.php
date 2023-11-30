@@ -402,12 +402,12 @@
 
            $('#download_agreement').click(function(){
 
-                var id = $(this).data('id')
+                var hash_id = $(this).data('hash_id')
                 $.ajax({
                 url: "{{ route('exportpdf.investment.agreement-pdf')}}",
                 method: 'GET',
                 data:{
-                    id_investment:id
+                    hash_id:hash_id
                 },
                 xhrFields: {
                     responseType: 'blob'
@@ -566,6 +566,7 @@
         $('body').on('click', '#show', function () {
             var username = $(this).data('username')
             var id = $(this).data('id')
+            var hash_id = $(this).data('hash_id')
             var b_amount = $(this).data('amount')
             var roi = $(this).data('roi')
             var slot = $(this).data('slot')
@@ -576,7 +577,7 @@
             var roi_amount =  addCommas(b_roi_amount)
 
             $("#btn-approve"). attr("data-id", id);
-            $("#download_agreement"). attr("data-id", id);
+            $("#download_agreement"). attr("data-hash_id", hash_id);
             $("#btn-reject"). attr("data-id", id);
             $('#show_username').val(username);
             $('#show_amount').val('RM '+amount);
