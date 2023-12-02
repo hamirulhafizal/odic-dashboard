@@ -54,13 +54,14 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
             $investment = Investments::get();
 
-             foreach($investment as $i){
+            foreach($investment as $i){
                 $formatted_date = date('Y-m-d H:i:s');
 
                 if($i->dividen_date <= $formatted_date){
 
                     $investmentStatus = InvestmentStatus::find($i->id);
-                    if($investmentStatus->name == 'Progress'){
+
+                    if(isset($investmentStatus->name) && $investmentStatus->name == 'Progress'){
                         $investmentStatus->name = 'Withdraw';
                         $investmentStatus->save();
                     }
@@ -69,7 +70,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
             $user = User::firstWhere(['email' => $request->email]);
 
-            if (! $user->hasVerifiedEmail()) {
+            if (isset($user) && ! $user->hasVerifiedEmail()) {
                 $user->sendEmailVerificationNotification();
                 return response()->json(["msg" => "Email not yet verification! Email verification link sent on your email address."]);
             }
