@@ -265,7 +265,7 @@ class InvestmentController extends Controller
                 }
             }
             $investment->save();
-            $message = array('message' => 'Investment Agreement stored successfully!', 'title' => 'Success!');
+            $message = array('message' => 'Investment Agreement stored successfully!', 'title' => 'Success!', 'filename' => $filename);
             return response()->json($message);
 
         } catch (\Throwable $th) {
